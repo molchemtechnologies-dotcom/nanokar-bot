@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Nanokar AI Widget</title>
+<style>
+    /* Genel Ayarlar */
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: transparent; }
+    
+    /* Sağ Alt Köşe Konteyner */
+    #nanokar-chatbot-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; align-items: flex-end; }
+
+    /* Ana Yuvarlak Buton (Telefon/Mesaj İkonu) */
+    .main-button {
+        width: 60px; height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        color: white; border: none; cursor: pointer;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        font-size: 28px; display: flex; justify-content: center; align-items: center;
+        transition: transform 0.2s;
+    }
+    .main-button:hover { transform: scale(1.1); }
+
+    /* Chat Penceresi */
+    .chat-window {
+        width: 350px; height: 500px;
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+        display: none; flex-direction: column;
+        overflow: hidden; margin-bottom: 15px;
+        border: 1px solid #e0e0e0;
+    }
+    .chat-window.open { display: flex; animation: popUp 0.3s ease-out; }
+
+    @keyframes popUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Header */
+    .chat-header {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        color: white; padding: 15px;
+        font-weight: bold; display: flex; justify-content: space-between; align-items: center;
+    }
+
+    /* Mesaj Alanı */
+    .chat-messages { flex: 1; padding: 15px; overflow-y: auto; background: #f9f9f9; display: flex; flex-direction: column; gap: 10px; }
+    
+    .message { max-width: 80%; padding: 10px 14px; border-radius: 15px; font-size: 14px; line-height: 1.4; }
+    .message.user { align-self: flex-end; background: #2a5298; color: white; border-bottom-right-radius: 2px; }
+    .message.bot { align-self: flex-start; background: #e9ecef; color: #333; border-bottom-left-radius: 2px; }
+    
+    /* Linklerin rengi */
+    .message.bot a { color: #1e3c72; font-weight: bold; text-decoration: underline; }
+
+    /* Input Alanı */
+    .chat-input-area { padding: 10px; background: white; border-top: 1px solid #eee; display: flex; align-items: center; gap: 5px; }
+    .chat-input-area input { flex: 1; padding: 10px; border-radius: 20px; border: 1px solid #ddd; outline: none; }
+    
+    /* Gönder ve Mikrofon Butonları */
+    .icon-btn { background: none; border: none; cursor: pointer; font-size: 20px; padding: 5px; color: #555; transition: color 0.2s; }
+    .icon-btn:hover { color: #1e3c72; }
+    .mic-active { color: red !important; animation: pulse 1s infinite; }
+
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+</style>
+</head>
+<body>
+
+<div id="nanokar-chatbot-container">
+    <div class="chat-window" id="chatWindow">
+        <div class="chat-header">
+            <span>Nanokar Asistan 🤖</span>
+            <button onclick="toggleChat()" style="background:none;border:none;color:white;font-size:20px;cursor:pointer;">&times;</button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot">Merhaba! Nanokar'a hoş geldiniz. Size ürünlerimiz hakkında nasıl yardımcı olabilirim?</div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="userInput" placeholder="Bir şeyler yazın..." onkeypress="if(event.key==='Enter') sendMessage()">
+            <button class="icon-btn" id="micBtn" onclick="startVoice()" title="Sesli Yaz">🎙️</button>
+            <button class="icon-btn" onclick="sendMessage()" title="Gönder">➤</button>
+        </div>
+    </div>
+
+    <button class="main-button" onclick="toggleChat()">
+        💬
+    </button>
+</div>
+
+<script>
+    const API_URL = 'http://localhost:3001/api/chat';
+    let conversationHistory = [];
+
+    function toggleChat() {
+        const w = document.getElementById('chatWindow');
+        w.classList.toggle('open');
+        if (w.classList.contains('open')) document.getElementById('userInput').focus();
+    }
+
+    function addMessage(text, sender) {
+        const div = document.getElementById('chatMessages');
+        const msg = document.createElement('div');
+        msg.classList.add('message', sender);
+        msg.innerHTML = text; // HTML destekler (linkler için)
+        div.appendChild(msg);
+        div.scrollTop = div.scrollHeight;
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('userInput');
+        const text = input.value.trim();
+        if (!text) return;
+
+        addMessage(text, 'user');
+        input.value = '';
+        conversationHistory.push({ role: 'user', content: text });
+
+        try {
+            const res = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ messages: conversationHistory })
+            });
+            const data = await res.json();
+            
+            if (data.success) {
+                // Bot cevabını ekle (Linkler server.js'den HTML olarak geliyor)
+                addMessage(data.message, 'bot');
+                conversationHistory.push({ role: 'assistant', content: data.message });
+            } else {
+                addMessage('Hata: ' + data.error, 'bot');
+            }
+        } catch (err) {
+            addMessage('Sunucuya bağlanılamadı.', 'bot');
+        }
+    }
+
+    // Basit Ses Butonu İşlevi (Görsel tepki)
+    function startVoice() {
+        const micBtn = document.getElementById('micBtn');
+        if (micBtn.classList.contains('mic-active')) {
+            micBtn.classList.remove('mic-active');
+            alert("Ses kaydı durduruldu (Demo)");
+        } else {
+            micBtn.classList.add('mic-active');
+            alert("Ses kaydı başladı (Demo - Tarayıcı izni gerekli)");
+        }
+    }
+</script>
+
+</body>
+</html>
