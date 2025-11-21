@@ -1,0 +1,119 @@
+[
+  {
+    "timestamp": "2025-11-18T11:43:00.354Z",
+    "interactionType": "text",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Ürünlerin fiyatları nedir?"
+      },
+      {
+        "role": "assistant",
+        "content": "Tabii, şu anda mevcut olan ürünlerin fiyatları şöyle:\n\n1. Titanium Nitride (TiN) Tozu: 850 TL\n2. Graphene Nanoplatelets: 1250 TL\n3. Hidroksiapatit (HA) Tozu: 650 TL\n4. Nano Demir Oksit (Fe3O4): 480 TL\n\nStok durumları ve diğer detaylar hakkında da bilgi verebilirim. Başka bir sorunuz varsa sormaktan çekinmeyin!"
+      }
+    ],
+    "metadata": {
+      "tokens": {
+        "prompt_tokens": 843,
+        "completion_tokens": 128,
+        "total_tokens": 971,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-18T11:43:13.937Z",
+    "interactionType": "text",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Ürünlerin fiyatları nedir?"
+      },
+      {
+        "role": "assistant",
+        "content": "Tabii, şu anda mevcut olan ürünlerin fiyatları şöyle:\n\n1. Titanium Nitride (TiN) Tozu: 850 TL\n2. Graphene Nanoplatelets: 1250 TL\n3. Hidroksiapatit (HA) Tozu: 650 TL\n4. Nano Demir Oksit (Fe3O4): 480 TL\n\nStok durumları ve diğer detaylar hakkında da bilgi verebilirim. Başka bir sorunuz varsa sormaktan çekinmeyin!"
+      },
+      {
+        "role": "user",
+        "content": "grafen oksit"
+      },
+      {
+        "role": "assistant",
+        "content": "Malesef şu anda stoklarımızda graphene oksit bulunmamaktadır. Ancak size yüksek kaliteli Graphene Nanoplatelets'i öneririm. Fiyatı 1250 TL dir. Daha fazla bilgi almak için [buraya tıklayabilirsiniz.](ürün_linki)  Eğer başka bir ürünle ilgili bilgi almak ya da başka bir sorunuz varsa lütfen belirtin. Size yardımcı olmaktan mutluluk duyarım."
+      }
+    ],
+    "metadata": {
+      "tokens": {
+        "prompt_tokens": 984,
+        "completion_tokens": 131,
+        "total_tokens": 1115,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-18T11:43:33.422Z",
+    "interactionType": "text",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Ürünlerin fiyatları nedir?"
+      },
+      {
+        "role": "assistant",
+        "content": "Tabii, şu anda mevcut olan ürünlerin fiyatları şöyle:\n\n1. Titanium Nitride (TiN) Tozu: 850 TL\n2. Graphene Nanoplatelets: 1250 TL\n3. Hidroksiapatit (HA) Tozu: 650 TL\n4. Nano Demir Oksit (Fe3O4): 480 TL\n\nStok durumları ve diğer detaylar hakkında da bilgi verebilirim. Başka bir sorunuz varsa sormaktan çekinmeyin!"
+      },
+      {
+        "role": "user",
+        "content": "grafen oksit"
+      },
+      {
+        "role": "assistant",
+        "content": "Malesef şu anda stoklarımızda graphene oksit bulunmamaktadır. Ancak size yüksek kaliteli Graphene Nanoplatelets'i öneririm. Fiyatı 1250 TL dir. Daha fazla bilgi almak için [buraya tıklayabilirsiniz.](ürün_linki)  Eğer başka bir ürünle ilgili bilgi almak ya da başka bir sorunuz varsa lütfen belirtin. Size yardımcı olmaktan mutluluk duyarım."
+      },
+      {
+        "role": "user",
+        "content": "bakır tozu öeşitleri nelerdir"
+      },
+      {
+        "role": "assistant",
+        "content": "Maalesef şu anda stoklarımızda bakır tozu bulunmamaktadır. Ancak size alternatif olarak diğer ürünlerimizden bahsedebilirim. Örneğin; Titanium Nitride (TiN) Tozu, Hidroksiapatit (HA) Tozu veya Nano Demir Oksit (Fe3O4) gibi ürünleri inceleyebilirsiniz. Bu ürünler de farklı uygulama alanlarına sahip yüksek kaliteli ürünlerdir. Başka bir sorunuz varsa ya da bu ürünlerle ilgili daha fazla bilgi almak isterseniz lütfen belirtin. Size yardımcı olmaktan mutluluk duyarım."
+      }
+    ],
+    "metadata": {
+      "tokens": {
+        "prompt_tokens": 1135,
+        "completion_tokens": 183,
+        "total_tokens": 1318,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      }
+    }
+  }
+]

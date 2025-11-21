@@ -1,0 +1,18 @@
+[
+  {
+    "role": "user",
+    "content": "merhaba"
+  },
+  {
+    "role": "assistant",
+    "content": "Merhaba! Size nasıl yardımcı olabilirim?"
+  },
+  {
+    "role": "user",
+    "content": "nano gümüş"
+  },
+  {
+    "role": "assistant",
+    "content": "Bulunan ürün linkleri:\nhttps://www.nanokar.com.tr/urun/indiyum-in-mikron-tozu-saflik-99-99-aps-1-5-m-kuresel\nhttps://www.nanokar.com.tr/urun/indiyum-in-mikron-tozu-saflik-99-99-aps-1-5-m-kuresel\nhttps://www.nanokar.com.tr/urun/indiyum-in-mikron-tozu-saflik-99-99-aps-1-5-m-kuresel"
+  }
+]

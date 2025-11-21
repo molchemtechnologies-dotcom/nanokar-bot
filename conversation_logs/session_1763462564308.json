@@ -1,0 +1,308 @@
+[
+  {
+    "timestamp": "2025-11-18T10:42:51.370Z",
+    "interactionType": "text",
+    "messages": [
+      {
+        "role": "user",
+        "content": "selamlar"
+      },
+      {
+        "role": "assistant",
+        "content": "Merhaba! Size nasıl yardımcı olabilirim? Bir sorunuz ya da ihtiyacınız var mı?"
+      }
+    ],
+    "metadata": {
+      "tokens": {
+        "prompt_tokens": 84,
+        "completion_tokens": 31,
+        "total_tokens": 115,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-18T10:43:01.773Z",
+    "interactionType": "text",
+    "messages": [
+      {
+        "role": "user",
+        "content": "selamlar"
+      },
+      {
+        "role": "assistant",
+        "content": "Merhaba! Size nasıl yardımcı olabilirim? Bir sorunuz ya da ihtiyacınız var mı?"
+      },
+      {
+        "role": "user",
+        "content": "Kargo süresi ne kadar?"
+      },
+      {
+        "role": "assistant",
+        "content": "Kargo süresi genellikle ürüne ve gönderim adresinize göre değişiklik gösterebilir. En güvenilir bilgiyi almak için sipariş verirken veya satın alırken kargo süresini göz önünde bulundurmanız önemlidir. Siparişinizin kargo süresi hakkında daha fazla detay almak isterseniz, lütfen doğrudan satın aldığınız platform veya mağaza ile iletişime geçiniz.  \n\nBaşka bir sorunuz var mı? Size nasıl yardımcı olabilirim?"
+      }
+    ],
+    "metadata": {
+      "tokens": {
+        "prompt_tokens": 131,
+        "completion_tokens": 149,
+        "total_tokens": 280,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-18T10:43:50.919Z",
+    "interactionType": "text",
+    "messages": [
+      {
+        "role": "user",
+        "content": "selamlar"
+      },
+      {
+        "role": "assistant",
+        "content": "Merhaba! Size nasıl yardımcı olabilirim? Bir sorunuz ya da ihtiyacınız var mı?"
+      },
+      {
+        "role": "user",
+        "content": "Kargo süresi ne kadar?"
+      },
+      {
+        "role": "assistant",
+        "content": "Kargo süresi genellikle ürüne ve gönderim adresinize göre değişiklik gösterebilir. En güvenilir bilgiyi almak için sipariş verirken veya satın alırken kargo süresini göz önünde bulundurmanız önemlidir. Siparişinizin kargo süresi hakkında daha fazla detay almak isterseniz, lütfen doğrudan satın aldığınız platform veya mağaza ile iletişime geçiniz.  \n\nBaşka bir sorunuz var mı? Size nasıl yardımcı olabilirim?"
+      },
+      {
+        "role": "user",
+        "content": "Ürünlerin fiyatları nedir?"
+      },
+      {
+        "role": "assistant",
+        "content": "Üzgünüm, size spesifik bir mağaza veya ürün hakkında fiyat bilgisi veremem çünkü ben gerçek zamanlı internet bağlantısına sahip değilim ve canlı verilere erişimim yok. Ancak, alışveriş yapmayı düşündüğünüz ürünleri satan platform veya mağazaların web sitelerini ziyaret ederek güncel fiyatları kontrol edebilirsiniz. Ayrıca, belirli bir ürün veya kategori hakkında fiyat bilgisi isterseniz, size yardımcı olmamı ister misiniz?"
+      }
+    ],
+    "metadata": {
+      "tokens": {
+        "prompt_tokens": 299,
+        "completion_tokens": 156,
+        "total_tokens": 455,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-18T10:50:04.650Z",
+    "interactionType": "text",
+    "messages": [
+      {
+        "role": "user",
+        "content": "selamlar"
+      },
+      {
+        "role": "assistant",
+        "content": "Merhaba! Size nasıl yardımcı olabilirim? Bir sorunuz ya da ihtiyacınız var mı?"
+      },
+      {
+        "role": "user",
+        "content": "Kargo süresi ne kadar?"
+      },
+      {
+        "role": "assistant",
+        "content": "Kargo süresi genellikle ürüne ve gönderim adresinize göre değişiklik gösterebilir. En güvenilir bilgiyi almak için sipariş verirken veya satın alırken kargo süresini göz önünde bulundurmanız önemlidir. Siparişinizin kargo süresi hakkında daha fazla detay almak isterseniz, lütfen doğrudan satın aldığınız platform veya mağaza ile iletişime geçiniz.  \n\nBaşka bir sorunuz var mı? Size nasıl yardımcı olabilirim?"
+      },
+      {
+        "role": "user",
+        "content": "Ürünlerin fiyatları nedir?"
+      },
+      {
+        "role": "assistant",
+        "content": "Üzgünüm, size spesifik bir mağaza veya ürün hakkında fiyat bilgisi veremem çünkü ben gerçek zamanlı internet bağlantısına sahip değilim ve canlı verilere erişimim yok. Ancak, alışveriş yapmayı düşündüğünüz ürünleri satan platform veya mağazaların web sitelerini ziyaret ederek güncel fiyatları kontrol edebilirsiniz. Ayrıca, belirli bir ürün veya kategori hakkında fiyat bilgisi isterseniz, size yardımcı olmamı ister misiniz?"
+      },
+      {
+        "role": "user",
+        "content": "selamlar nanokar  grafen ürünü var mı"
+      },
+      {
+        "role": "assistant",
+        "content": "Merhaba! Maalesef, ben gerçek zamanlı ürün aramaları yapamam ve stok durumunu kontrol edemem. Ancak, Grafen ürünleri genellikle elektronik cihazlar, spor ekipmanları, malzemeler ve ileri teknoloji ürünlerinde kullanılan bir materyaldir. Grafen ürünlerini araştırmaya yönelik bir mağazaya yönlendirebilir veya arama motorlarını kullanarak Grafen ürünleri hakkında daha fazla bilgi edinebilirsiniz. Başka bir konuda yardımcı olabilir miyim?"
+      }
+    ],
+    "metadata": {
+      "tokens": {
+        "prompt_tokens": 479,
+        "completion_tokens": 157,
+        "total_tokens": 636,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-18T11:01:08.801Z",
+    "interactionType": "text",
+    "messages": [
+      {
+        "role": "user",
+        "content": "selamlar"
+      },
+      {
+        "role": "assistant",
+        "content": "Merhaba! Size nasıl yardımcı olabilirim? Bir sorunuz ya da ihtiyacınız var mı?"
+      },
+      {
+        "role": "user",
+        "content": "Kargo süresi ne kadar?"
+      },
+      {
+        "role": "assistant",
+        "content": "Kargo süresi genellikle ürüne ve gönderim adresinize göre değişiklik gösterebilir. En güvenilir bilgiyi almak için sipariş verirken veya satın alırken kargo süresini göz önünde bulundurmanız önemlidir. Siparişinizin kargo süresi hakkında daha fazla detay almak isterseniz, lütfen doğrudan satın aldığınız platform veya mağaza ile iletişime geçiniz.  \n\nBaşka bir sorunuz var mı? Size nasıl yardımcı olabilirim?"
+      },
+      {
+        "role": "user",
+        "content": "Ürünlerin fiyatları nedir?"
+      },
+      {
+        "role": "assistant",
+        "content": "Üzgünüm, size spesifik bir mağaza veya ürün hakkında fiyat bilgisi veremem çünkü ben gerçek zamanlı internet bağlantısına sahip değilim ve canlı verilere erişimim yok. Ancak, alışveriş yapmayı düşündüğünüz ürünleri satan platform veya mağazaların web sitelerini ziyaret ederek güncel fiyatları kontrol edebilirsiniz. Ayrıca, belirli bir ürün veya kategori hakkında fiyat bilgisi isterseniz, size yardımcı olmamı ister misiniz?"
+      },
+      {
+        "role": "user",
+        "content": "selamlar nanokar  grafen ürünü var mı"
+      },
+      {
+        "role": "assistant",
+        "content": "Merhaba! Maalesef, ben gerçek zamanlı ürün aramaları yapamam ve stok durumunu kontrol edemem. Ancak, Grafen ürünleri genellikle elektronik cihazlar, spor ekipmanları, malzemeler ve ileri teknoloji ürünlerinde kullanılan bir materyaldir. Grafen ürünlerini araştırmaya yönelik bir mağazaya yönlendirebilir veya arama motorlarını kullanarak Grafen ürünleri hakkında daha fazla bilgi edinebilirsiniz. Başka bir konuda yardımcı olabilir miyim?"
+      },
+      {
+        "role": "user",
+        "content": "GRAFENİ İÇ CEPHE BOYASINA NE KADAR KATARSSAM ELEKTRİ İLETİR"
+      },
+      {
+        "role": "assistant",
+        "content": "Grafen, tek atom kalınlığında karbon katmanlarından oluşan iletken bir materyaldir. Grafen içeren bir iç cephe boyası kullanarak duvarınıza bir iletkenlik özelliği eklemeyi planlıyorsanız, bu genellikle enerji verimliliği veya elektriksel cihazlar için kullanılır. \n\nGrafenin iç cephe boya karışımında ne kadar iletkenlik sağlayacağı, kullanılacak malzemenin oranına, boyanın kalınlığına ve uygulamaya bağlı olacaktır. Boyaya ne kadar çok grafen eklerseniz, iletkenlik o kadar artacaktır. Ancak, tam olarak ne kadar grafen eklemeniz gerektiği konusunda bilgi almak için, boya üreticisi veya satıcısından tavsiye almanız en iyisi olacaktır.\n\nEğer bu konuda daha fazla ayrıntıya ihtiyacınız varsa, lütfen daha spesifik bir soru sormaktan çekinmeyin. Yardımcı olmaktan mutluluk duyarım."
+      }
+    ],
+    "metadata": {
+      "tokens": {
+        "prompt_tokens": 674,
+        "completion_tokens": 284,
+        "total_tokens": 958,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-18T11:01:57.404Z",
+    "interactionType": "text",
+    "messages": [
+      {
+        "role": "user",
+        "content": "selamlar"
+      },
+      {
+        "role": "assistant",
+        "content": "Merhaba! Size nasıl yardımcı olabilirim? Bir sorunuz ya da ihtiyacınız var mı?"
+      },
+      {
+        "role": "user",
+        "content": "Kargo süresi ne kadar?"
+      },
+      {
+        "role": "assistant",
+        "content": "Kargo süresi genellikle ürüne ve gönderim adresinize göre değişiklik gösterebilir. En güvenilir bilgiyi almak için sipariş verirken veya satın alırken kargo süresini göz önünde bulundurmanız önemlidir. Siparişinizin kargo süresi hakkında daha fazla detay almak isterseniz, lütfen doğrudan satın aldığınız platform veya mağaza ile iletişime geçiniz.  \n\nBaşka bir sorunuz var mı? Size nasıl yardımcı olabilirim?"
+      },
+      {
+        "role": "user",
+        "content": "Ürünlerin fiyatları nedir?"
+      },
+      {
+        "role": "assistant",
+        "content": "Üzgünüm, size spesifik bir mağaza veya ürün hakkında fiyat bilgisi veremem çünkü ben gerçek zamanlı internet bağlantısına sahip değilim ve canlı verilere erişimim yok. Ancak, alışveriş yapmayı düşündüğünüz ürünleri satan platform veya mağazaların web sitelerini ziyaret ederek güncel fiyatları kontrol edebilirsiniz. Ayrıca, belirli bir ürün veya kategori hakkında fiyat bilgisi isterseniz, size yardımcı olmamı ister misiniz?"
+      },
+      {
+        "role": "user",
+        "content": "selamlar nanokar  grafen ürünü var mı"
+      },
+      {
+        "role": "assistant",
+        "content": "Merhaba! Maalesef, ben gerçek zamanlı ürün aramaları yapamam ve stok durumunu kontrol edemem. Ancak, Grafen ürünleri genellikle elektronik cihazlar, spor ekipmanları, malzemeler ve ileri teknoloji ürünlerinde kullanılan bir materyaldir. Grafen ürünlerini araştırmaya yönelik bir mağazaya yönlendirebilir veya arama motorlarını kullanarak Grafen ürünleri hakkında daha fazla bilgi edinebilirsiniz. Başka bir konuda yardımcı olabilir miyim?"
+      },
+      {
+        "role": "user",
+        "content": "GRAFENİ İÇ CEPHE BOYASINA NE KADAR KATARSSAM ELEKTRİ İLETİR"
+      },
+      {
+        "role": "assistant",
+        "content": "Grafen, tek atom kalınlığında karbon katmanlarından oluşan iletken bir materyaldir. Grafen içeren bir iç cephe boyası kullanarak duvarınıza bir iletkenlik özelliği eklemeyi planlıyorsanız, bu genellikle enerji verimliliği veya elektriksel cihazlar için kullanılır. \n\nGrafenin iç cephe boya karışımında ne kadar iletkenlik sağlayacağı, kullanılacak malzemenin oranına, boyanın kalınlığına ve uygulamaya bağlı olacaktır. Boyaya ne kadar çok grafen eklerseniz, iletkenlik o kadar artacaktır. Ancak, tam olarak ne kadar grafen eklemeniz gerektiği konusunda bilgi almak için, boya üreticisi veya satıcısından tavsiye almanız en iyisi olacaktır.\n\nEğer bu konuda daha fazla ayrıntıya ihtiyacınız varsa, lütfen daha spesifik bir soru sormaktan çekinmeyin. Yardımcı olmaktan mutluluk duyarım."
+      },
+      {
+        "role": "user",
+        "content": "iletkenlik için sitenizdeki hangi grafeni önerirsin"
+      },
+      {
+        "role": "assistant",
+        "content": "Maalesef, benim erişimimdeki bilgiler canlı değil ve önerilerde bulunamam. Ancak, iletkenlik için kullanılabilecek Grafen ürünleri genellikle çeşitli tipte gelirler. Bu ürünler genellikle Grafen tabakalarını içeren spreyler, kaplamalar veya filmler olabilir.\n\nEğer Grafen ile ilgili bir ürün arıyorsanız, araştırma yapmanızı ve farklı ürünlerin özelliklerini karşılaştırmanızı öneririm. Grafen ürünleri genellikle elektronik mağazalarda, kimyasal malzeme satıcılarında veya çevrimiçi perakendecilerde bulunabilir. \n\nÜrün seçiminde size yardımcı olacak daha spesifik sorularınız varsa, lütfen sormaktan çekinmeyin. Size yardımcı olmaktan mutluluk duyarım."
+      }
+    ],
+    "metadata": {
+      "tokens": {
+        "prompt_tokens": 983,
+        "completion_tokens": 253,
+        "total_tokens": 1236,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      }
+    }
+  }
+]

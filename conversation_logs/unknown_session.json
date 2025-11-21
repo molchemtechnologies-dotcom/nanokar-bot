@@ -1,0 +1,220 @@
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "Selamlar"
+    },
+    {
+      "role": "assistant",
+      "content": "Selam! Nasılsın? Bugün neler yapıyorsun?"
+    },
+    {
+      "role": "user",
+      "content": "bir çalışma yapıyorum dekoratif boya yapıyorum. bunun için metal tozlarına ihtiyacım var. bakır tozu demir tozu"
+    },
+    {
+      "role": "assistant",
+      "content": "Şu an web sitemizde \"<b>Ürün arıyorsa sadece ürün adını yaz. 1. Bakır tozu 2. Demir tozu</b>\" ürünü listelenmemiş görünüyor. Ancak endişelenmeyin, satış departmanımız bu ürünü sizin için özel olarak temin edebilir.<br><br>\n            Sizinle iletişime geçebilmemiz için lütfen <b>Adınızı, Soyadınızı ve Telefon Numaranızı</b> yazar mısınız?"
+    },
+    {
+      "role": "user",
+      "content": "bakır tozu"
+    },
+    {
+      "role": "assistant",
+      "content": "Evet, <b>bakır tozu</b> ile ilgili ürünlerimiz stoklarımızda mevcuttur. İncelemek için:<br>• <a href=\"https://www.nanokar.com.tr/kategori?ara=Bak%C4%B1r%20Tozu%2075%20%C2%B5m%20%25%2099%2C9\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Bakır Tozu 75 µm % 99,9</a><br>• <a href=\"https://www.nanokar.com.tr/kategori?ara=Bak%C4%B1r%20Tozu%2075%20%C2%B5m%20%25%2099%2C9\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Bakır Tozu 75 µm % 99,9</a><br>• <a href=\"https://www.nanokar.com.tr/kategori?ara=Bak%C4%B1r%20Tozu%2075%20%C2%B5m%20%25%2099%2C9\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Bakır Tozu 75 µm % 99,9</a><br>"
+    },
+    {
+      "role": "user",
+      "content": "demir tozu"
+    },
+    {
+      "role": "assistant",
+      "content": "Evet, <b>demir tozu</b> ile ilgili ürünlerimiz stoklarımızda mevcuttur. İncelemek için:<br>• <a href=\"https://www.nanokar.com.tr/kategori?ara=Demir%20Tozu%205%20%C2%B5m%20%2599%2C99\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Demir Tozu 5 µm %99,99</a><br>• <a href=\"https://www.nanokar.com.tr/kategori?ara=Demir%20Tozu%205%20%C2%B5m%20%2599%2C99\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Demir Tozu 5 µm %99,99</a><br>• <a href=\"https://www.nanokar.com.tr/kategori?ara=Demir%20Tozu%2044%20%C2%B5m%20%2599\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Demir Tozu 44 µm %99</a><br>"
+    },
+    {
+      "role": "user",
+      "content": "grafen var mı"
+    },
+    {
+      "role": "assistant",
+      "content": "Şu an web sitemizde \"<b>Ürün arıyorsa sadece ürün adını yaz.</b>\" ürünü listelenmemiş görünüyor. Ancak endişelenmeyin, satış departmanımız bu ürünü sizin için özel olarak temin edebilir.<br><br>\n            Sizinle iletişime geçebilmemiz için lütfen <b>Adınızı, Soyadınızı ve Telefon Numaranızı</b> yazar mısınız?"
+    },
+    {
+      "role": "user",
+      "content": "selamlar"
+    },
+    {
+      "role": "assistant",
+      "content": "Selamlar! Size nasıl yardımcı olabilirim?"
+    },
+    {
+      "role": "user",
+      "content": "boyalara dekoratif özellik kazandırmak isstiyoum. bunun için bakır tozuna ihtiyacım var"
+    },
+    {
+      "role": "assistant",
+      "content": "Evet, sorduğunuz ürünlerle ilgili stoklarımızda şunlar mevcut:<br><br>✅ <a href=\"https://www.nanokar.com.tr/kategori?ara=Bak%C4%B1r%20Tozu%2075%20%C2%B5m%20%25%2099%2C9\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Bakır Tozu 75 µm % 99,9</a><br>✅ <a href=\"https://www.nanokar.com.tr/kategori?ara=Bak%C4%B1r%20Tozu%2075%20%C2%B5m%20%25%2099%2C9\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Bakır Tozu 75 µm % 99,9</a><br><br>Linklere tıklayarak detayları inceleyebilirsiniz. Başka yardımcı olabilir miyim?"
+    },
+    {
+      "role": "user",
+      "content": "Gümüş tozu sipariş vermek istiyorum"
+    },
+    {
+      "role": "assistant",
+      "content": "Evet, sorduğunuz ürünlerle ilgili stoklarımızda şunlar mevcut:<br><br>✅ <a href=\"https://www.nanokar.com.tr/kategori?ara=G%C3%BCm%C3%BC%C5%9F%20Tozu%203%20%C2%B5m%20%2599.9\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Gümüş Tozu 3 µm %99.9</a><br>✅ <a href=\"https://www.nanokar.com.tr/kategori?ara=G%C3%BCm%C3%BC%C5%9F%20Tozu%203%20%C2%B5m%20%2599.9\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Gümüş Tozu 3 µm %99.9</a><br><br>Linklere tıklayarak detayları inceleyebilirsiniz. Başka yardımcı olabilir miyim?"
+    },
+    {
+      "role": "user",
+      "content": "Bir şey daha soracaktım.Metal clay yapmak için uygun mudur bu malzeme bilginiz var mı sitenizde nano tozlar da var ama farkı anlayamadım"
+    },
+    {
+      "role": "assistant",
+      "content": "Şu an web sitemizde <b>\"Nano Tozlar\"</b> ile ilgili doğrudan bir sonuç görüntülenemiyor. Ancak satış departmanımız bu ürünleri sizin için temin edebilir.<br><br>\n            Sizinle iletişime geçebilmemiz için lütfen <b>Adınızı, Soyadınızı ve Telefon Numaranızı</b> yazar mısınız?"
+    },
+    {
+      "role": "user",
+      "content": "Metal clay yapmak için uygun mudur bu malzeme bilginiz var mı sitenizde nano tozlar da var ama farkı anlayamadım"
+    },
+    {
+      "role": "assistant",
+      "content": "Şu an web sitemizde <b>\"Nano Tozlar\"</b> ile ilgili doğrudan bir sonuç görüntülenemiyor. Ancak satış departmanımız bu ürünleri sizin için temin edebilir.<br><br>\n            Sizinle iletişime geçebilmemiz için lütfen <b>Adınızı, Soyadınızı ve Telefon Numaranızı</b> yazar mısınız?"
+    },
+    {
+      "role": "user",
+      "content": "İletken Karbon Siyahı Nano Tozu 148 nm Bitki 5 gr"
+    },
+    {
+      "role": "assistant",
+      "content": "Evet, sorduğunuz ürünlerle ilgili stoklarımızda şunlar mevcut:<br><br>✅ <a href=\"https://www.nanokar.com.tr/kategori?ara=S%C3%BCper%20%C4%B0letken%20Karbon%20Siyah%20Nanopartik%C3%BCl%2FNanotoz%20ve%20Karbon%20Nanot%C3%BCp%20Kar%C4%B1%C5%9F%C4%B1m%C4%B1\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Süper İletken Karbon Siyah Nanopartikül/Nanotoz ve Karbon Nanotüp Karışımı</a><br>✅ <a href=\"https://www.nanokar.com.tr/kategori?ara=S%C3%BCper%20%C4%B0letken%20Karbon%20Siyah%20Nanopartik%C3%BCl%2FNanotoz%20ve%20Karbon%20Nanot%C3%BCp%20Kar%C4%B1%C5%9F%C4%B1m%C4%B1\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Süper İletken Karbon Siyah Nanopartikül/Nanotoz ve Karbon Nanotüp Karışımı</a><br><br>Linklere tıklayarak detayları inceleyebilirsiniz. Başka yardımcı olabilir miyim?"
+    },
+    {
+      "role": "user",
+      "content": "SELAMLAR"
+    },
+    {
+      "role": "assistant",
+      "content": "Merhaba! Size nasıl yardımcı olabilirim?"
+    },
+    {
+      "role": "user",
+      "content": "Metal clay yapmak için uygun mudur bu malzeme bilginiz var mı sitenizde nano tozlar da var ama farkı anlayamadım"
+    },
+    {
+      "role": "assistant",
+      "content": "Şu an web sitemizde <b>\"Metal Clay, Nano Tozlar\"</b> ile ilgili doğrudan bir sonuç görüntülenemiyor. Ancak satış departmanımız bu ürünleri sizin için temin edebilir.<br><br>\n            Sizinle iletişime geçebilmemiz için lütfen <b>Adınızı, Soyadınızı ve Telefon Numaranızı</b> yazar mısınız?"
+    },
+    {
+      "role": "user",
+      "content": "Tariflerde saf gümüş tozu ve bağlayıcılar kullanılır diyor ama"
+    },
+    {
+      "role": "assistant",
+      "content": "Metal clay, genellikle saf gümüş tozu, bağlayıcılar ve su gibi malzemelerin karıştırılmasıyla elde edilen bir tür seramik benzeri bir hamur halindedir. Bu hamur, şekillendirildikten sonra ısıtıldığında bağlayıcıların yanmasıyla geri kalan saf gümüş tozunun yoğunlaşması ve sertleşmesi sağlanır. \n\nNano tozlar ise, çok daha küçük parçacık boyutlarına sahip tozları ifade eder ve bazı uygulamalarda daha iyi bir akışkanlık ve homojenlik sağlayabilir. Ancak, metal clay yapmak için geleneksel gümüş tozu kullanmak genellikle daha yaygındır ve daha bilinen bir uygulamadır. \n\nTariflerde belirtilen saf gümüş tozu ve bağlayıcılar, metal clay'in yapısının sağlam ve işlenebilir olmasını sağlamak için gereklidir. Eğer metal clay yapımında kullanmak için malzeme arıyorsanız, saf gümüş tozu tercih etmeniz daha uygun olacaktır. Başka bir sorunuz var mı?"
+    },
+    {
+      "role": "user",
+      "content": "gümüş tozu fiyat nedir"
+    },
+    {
+      "role": "assistant",
+      "content": "Evet, sorduğunuz ürünlerle ilgili stoklarımızda şunlar mevcut:<br><br>✅ <a href=\"https://www.nanokar.com.tr/kategori?ara=G%C3%BCm%C3%BC%C5%9F%20Tozu%203%20%C2%B5m%20%2599.9\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Gümüş Tozu 3 µm %99.9</a><br><br>Linklere tıklayarak detayları inceleyebilirsiniz. Başka yardımcı olabilir miyim?"
+    },
+    {
+      "role": "user",
+      "content": "bakır tozu"
+    },
+    {
+      "role": "assistant",
+      "content": "Evet, sorduğunuz ürünlerle ilgili stoklarımızda şunlar mevcut:<br><br>✅ <a href=\"https://www.nanokar.com.tr/kategori?ara=Bak%C4%B1r%20Tozu%2075%20%C2%B5m%20%25%2099%2C9\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Bakır Tozu 75 µm % 99,9</a><br>✅ <a href=\"https://www.nanokar.com.tr/kategori?ara=Bak%C4%B1r%20Tozu%2015%20%C2%B5m%20%25%2099%2C9\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Bakır Tozu 15 µm % 99,9</a><br>✅ <a href=\"https://www.nanokar.com.tr/kategori?ara=Bak%C4%B1r%20Tozu%2044%20%C2%B5m%20%25%2099%2C9\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Bakır Tozu 44 µm % 99,9</a><br><br>Linklere tıklayarak detayları inceleyebilirsiniz. Başka yardımcı olabilir miyim?"
+    },
+    {
+      "role": "user",
+      "content": "bor tozu"
+    },
+    {
+      "role": "assistant",
+      "content": "Evet, sorduğunuz ürünlerle ilgili stoklarımızda şunlar mevcut:<br><br>✅ <a href=\"https://www.nanokar.com.tr/kategori?ara=Bor%20Tozu%207%2C5%20%C2%B5m\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Bor Tozu 7,5 µm</a><br>✅ <a href=\"https://www.nanokar.com.tr/kategori?ara=Bor%20Tozu%2044%20%C2%B5m\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Bor Tozu 44 µm</a><br>✅ <a href=\"https://www.nanokar.com.tr/kategori?ara=Bor%20Tozu%201-2%20%C2%B5m%20%2599%2C95\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Bor Tozu 1-2 µm %99,95</a><br><br>Linklere tıklayarak detayları inceleyebilirsiniz. Başka yardımcı olabilir miyim?"
+    },
+    {
+      "role": "user",
+      "content": "bor karbür"
+    },
+    {
+      "role": "assistant",
+      "content": "Evet, sorduğunuz ürünlerle ilgili stoklarımızda şunlar mevcut:<br><br>✅ <a href=\"https://www.nanokar.com.tr/kategori?ara=Bor%20Karb%C3%BCr%20150%20%C2%B5m\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Bor Karbür 150 µm</a><br>✅ <a href=\"https://www.nanokar.com.tr/kategori?ara=Bor%20Karb%C3%BCr%20100%20%C2%B5m\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Bor Karbür 100 µm</a><br>✅ <a href=\"https://www.nanokar.com.tr/kategori?ara=Bor%20Karb%C3%BCr%20%3C10%20%C2%B5m\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Bor Karbür <10 µm</a><br><br>Linklere tıklayarak detayları inceleyebilirsiniz. Başka yardımcı olabilir miyim?"
+    },
+    {
+      "role": "user",
+      "content": "nano demir var mı"
+    },
+    {
+      "role": "assistant",
+      "content": "Evet, sorduğunuz ürünlerle ilgili stoklarımızda şunlar mevcut:<br><br>✅ <a href=\"https://www.nanokar.com.tr/kategori?ara=Nano%20Demir%20Tozu%20790%20nm\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Nano Demir Tozu 790 nm</a><br>✅ <a href=\"https://www.nanokar.com.tr/kategori?ara=Nano%20Demir%20Tozu%2035%20nm\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Nano Demir Tozu 35 nm</a><br>✅ <a href=\"https://www.nanokar.com.tr/kategori?ara=Nano%20Demir%20Tozu%2022%20nm\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Nano Demir Tozu 22 nm</a><br><br>Linklere tıklayarak detayları inceleyebilirsiniz. Başka yardımcı olabilir miyim?"
+    },
+    {
+      "role": "user",
+      "content": "selamlar  boya firmasıyız"
+    },
+    {
+      "role": "assistant",
+      "content": "Merhaba! Boya firmanızla ilgili nasıl yardımcı olabilirim? Ürünler, hizmetler veya başka bir konuda bilgi almak ister misiniz?"
+    },
+    {
+      "role": "user",
+      "content": "boyalarımıza dekoratif özellik kazandırmak isstiyorum demir tozu bakır tozu  arıyoruz"
+    },
+    {
+      "role": "assistant",
+      "content": "Evet, sorduğunuz ürünlerle ilgili stoklarımızda şunlar mevcut:<br><br>✅ <a href=\"https://www.nanokar.com.tr/kategori?ara=Demir%20Tozu%205%20%C2%B5m%20%2599%2C99\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Demir Tozu 5 µm %99,99</a><br>✅ <a href=\"https://www.nanokar.com.tr/kategori?ara=Demir%20Tozu%2044%20%C2%B5m%20%2599\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Demir Tozu 44 µm %99</a><br>✅ <a href=\"https://www.nanokar.com.tr/kategori?ara=Demir%20Tozu%20120%20%C2%B5m%20%2599%2C99\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Demir Tozu 120 µm %99,99</a><br>✅ <a href=\"https://www.nanokar.com.tr/kategori?ara=Bak%C4%B1r%20Tozu%2075%20%C2%B5m%20%25%2099%2C9\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Bakır Tozu 75 µm % 99,9</a><br>✅ <a href=\"https://www.nanokar.com.tr/kategori?ara=Bak%C4%B1r%20Tozu%2015%20%C2%B5m%20%25%2099%2C9\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Bakır Tozu 15 µm % 99,9</a><br>✅ <a href=\"https://www.nanokar.com.tr/kategori?ara=Bak%C4%B1r%20Tozu%2044%20%C2%B5m%20%25%2099%2C9\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Bakır Tozu 44 µm % 99,9</a><br><br>Linklere tıklayarak detayları inceleyebilirsiniz. Başka yardımcı olabilir miyim?"
+    },
+    {
+      "role": "user",
+      "content": "bunları boyada naıl kullanıyoruz"
+    },
+    {
+      "role": "assistant",
+      "content": "Demir ve bakır tozlarını boyalarda kullanmanın bazı yaygın yöntemleri şunlardır: \n\n1. **Karıştırma**: Boya karışımınıza demir veya bakır tozunu ekleyerek homojen bir şekilde karıştırabilirsiniz. Genellikle %1-10 arası bir oran kullanılır, ancak bu oran boyanın türüne ve arzu edilen sonuca göre değişebilir.\n\n2. **Dekoratif Efekt**: Bu tozlar, boyanın üzerine doğrudan serpilerek özel efektler yaratmak için kullanılabilir. Örneğin, demir tozu uygulaması metalik bir görünüm sağlayabilirken, bakır tozu sıcak bir renk katabilir.\n\n3. **Renk Ve Doku Katkısı**: Tozlar, boyanın hem rengini hem de dokusunu değiştirmek için kullanılabilir. Böylece daha dokulu ve özgün yüzeyler elde edilebilir.\n\n4. **Kaplama Özelliği**: Metal tozları, bu tür boyaların dayanıklılığını artırabilir ve suya, kimyasallara karşı direnç sağlayabilir.\n\n5. **Sertleştirici Etki**: Özellikle demir tozu, bazı kaplamalarda mekanik dayanıklılığı artırmak için kullanılabilir.\n\nUygulama öncesi, hangi tür boyada kullanacağınızı (su bazlı, solvent bazlı vb.) dikkate alarak denemeler yapmanız önerilir. Ek olarak, tozları kullanırken uygun koruyucu ekipman kullanmayı unutmayın ve çalışma alanınızı iyi havalandırın.\n\nHerhangi bir sorunuz olursa veya daha fazla bilgi isterseniz yardımcı olmaktan memnuniyet duyarım!"
+    },
+    {
+      "role": "user",
+      "content": "nanomalzeme ssatışısınız varmı,"
+    },
+    {
+      "role": "assistant",
+      "content": "Evet, sorduğunuz ürünlerle ilgili stoklarımızda şunlar mevcut:<br><br>✅ <a href=\"https://www.nanokar.com.tr/kategori?ara=%C3%9C%C3%A7l%C3%BC%20Set%20Nano%20Malzemeler\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Üçlü Set Nano Malzemeler</a><br><br>Linklere tıklayarak detayları inceleyebilirsiniz. Başka yardımcı olabilir miyim?"
+    },
+    {
+      "role": "user",
+      "content": "daha detaylı bilgi için"
+    },
+    {
+      "role": "assistant",
+      "content": "Nano malzemeler hakkında daha fazla bilgi almak için aşağıdaki temel bilgileri göz önünde bulundurabilirsiniz:\n\n1. **Tanım ve Özellikler**: Nano malzemeler, genellikle 1-100 nanometre boyutunda olan malzemelerdir. Bu boyut aralığı, malzemelerin fiziksel ve kimyasal özelliklerini önemli ölçüde değiştirebilir. Örneğin, yüksek yüzey alanı ve reaktiflik gibi özellikler kazanabilirler.\n\n2. **Uygulama Alanları**: Nano malzemeler, inşaat, otomotiv, elektronik, sağlık, tekstil gibi birçok sektörde kullanılmaktadır. Örneğin, nano kaplamalar su geçirmezlik ve kir tutmazlık sağlamak için kullanılırken, nanoboyalar renk ve dayanıklılık açısından avantajlar sunar.\n\n3. **Ürünleri İncelemek**: Eğer spesifik bir nano malzeme arıyorsanız, ürün kategorilerimizi inceleyerek, her bir malzemenin detaylı özelliklerini ve uygulama alanlarını görebilirsiniz.\n\n4. **Teknik Destek**: Satış sonrası destek veya uygulama önerileri için uzman ekibimizle iletişime geçebilir, ürünlerle ilgili teknik bilgi alabilirsiniz.\n\nDetaylı bilgi ve ürünlerin teknik verileri için [web sitemizi](https://www.nanokar.com.tr) ziyaret edebilir veya doğrudan iletişime geçmek için telefon veya e-posta kullanabilirsiniz. Başka hangi konuda yardımcı olabilirim?"
+    },
+    {
+      "role": "user",
+      "content": "alüminyum pasta gaz beton hakkında bilgi almak istiyorum"
+    },
+    {
+      "role": "assistant",
+      "content": "Alüminyum pasta ve gaz beton hakkında aşağıdaki bilgiler size yardımcı olabilir:\n\n### Alüminyum Pasta\nAlüminyum pasta, genellikle yapı uygulamalarında ve inşaat sektöründe kullanılan, alüminyum tozları ve diğer bileşenlerin belirli oranlarda karıştırılması ile elde edilen bir malzemedir. Özellikle:\n\n1. **Kullanım Alanları**: Alüminyum pasta, genelde gaz beton üretimi, ateşe dayanıklı kaplamalar ve bazı yapı malzemelerinin dayanıklılığını artırmak için kullanılır.\n\n2. **Avantajlar**: Hafif, yüksek dayanıklılık, korozyona dayanıklıdır ve ses yalıtımı sağlar.\n\n3. **Uygulama**: Alüminyum pasta, gaz beton karışımına eklenerek daha hafif ve güçlü yapı elemanları elde etmek için kullanılır. \n\n### Gaz Beton\nGaz beton, hafif, yüksek ısı yalıtımı sağlayan ve genellikle beton veya tuğla yerine kullanılan bir yapı malzemesidir. Ana özellikleri şunlardır:\n\n1. **Yapı Özellikleri**: Gaz beton, hava boşlukları içeren bir yapıdadır, bu nedenle hafif ve iyi bir ısı yalıtımı sağlar. Ayrıca ses yalıtımı açısından da etkilidir.\n\n2. **Kullanım Alanları**: Duvar blokları, döşeme ve üst katlar gibi yapısal elemanlarda kullanılır.\n\n3. **Avantajlar**: Yangına dayanıklıdır, düşük enerji tüketimi ile üretilebilir ve çevre dostu bir malzeme olarak öne çıkar.\n\n### Birlikte Kullanım\nAlüminyum pasta ve gaz beton, birlikte kullanıldıklarında yapıların hafifliğini artırarak taşıma, montaj ve ısı yalıtımı açısından fayda sağlayabilirler.\n\nEğer belirli bir konuda daha fazla bilgi almak istiyorsanız veya ürünlerimiz hakkında spesifik sorularınız varsa, lütfen belirtin!"
+    },
+    {
+      "role": "user",
+      "content": "sssizde tozu varmı"
+    },
+    {
+      "role": "assistant",
+      "content": "Evet, sorduğunuz ürünlerle ilgili stoklarımızda şunlar mevcut:<br><br>✅ <a href=\"https://www.nanokar.com.tr/kategori?ara=Bor%20Tozu%207%2C5%20%C2%B5m\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Bor Tozu 7,5 µm</a><br>✅ <a href=\"https://www.nanokar.com.tr/kategori?ara=Bor%20Tozu%2044%20%C2%B5m\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Bor Tozu 44 µm</a><br>✅ <a href=\"https://www.nanokar.com.tr/kategori?ara=Krom%20Tozu%2044%20%C2%B5m\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Krom Tozu 44 µm</a><br><br>Linklere tıklayarak detayları inceleyebilirsiniz. Başka yardımcı olabilir miyim?"
+    },
+    {
+      "role": "user",
+      "content": "gaz beton tozu"
+    },
+    {
+      "role": "assistant",
+      "content": "Evet, sorduğunuz ürünlerle ilgili stoklarımızda şunlar mevcut:<br><br>✅ <a href=\"https://www.nanokar.com.tr/kategori?ara=Al%C3%BCminyum%20Pasta%20Gaz%20Beton%20Toz%20%3C70%20%C2%B5m%20%2565\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Alüminyum Pasta Gaz Beton Toz <70 µm %65</a><br><br>Linklere tıklayarak detayları inceleyebilirsiniz. Başka yardımcı olabilir miyim?"
+    }
+  ]
+}

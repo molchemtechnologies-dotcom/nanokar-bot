@@ -1,0 +1,119 @@
+[
+  {
+    "timestamp": "2025-11-18T11:39:14.684Z",
+    "interactionType": "text",
+    "messages": [
+      {
+        "role": "user",
+        "content": "selam"
+      },
+      {
+        "role": "assistant",
+        "content": "Merhaba! Size nasıl yardımcı olabilirim?"
+      }
+    ],
+    "metadata": {
+      "tokens": {
+        "prompt_tokens": 823,
+        "completion_tokens": 15,
+        "total_tokens": 838,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-18T11:39:31.389Z",
+    "interactionType": "text",
+    "messages": [
+      {
+        "role": "user",
+        "content": "selam"
+      },
+      {
+        "role": "assistant",
+        "content": "Merhaba! Size nasıl yardımcı olabilirim?"
+      },
+      {
+        "role": "user",
+        "content": "grafen oksit çeşitleri nelerdir"
+      },
+      {
+        "role": "assistant",
+        "content": "Maalesef grafen oksit ürünleri katalogumuzda bulunmamaktadır. Ancak yüksek kaliteli grafen nanoplatelets ürünümüzü inceleyebilirsiniz. Enerji depolama uygulamaları için ideal bir seçenektir. detaylı bilgiye [buradan](https://www.nanokar.com/products/grp-001) ulaşabilirsiniz."
+      }
+    ],
+    "metadata": {
+      "tokens": {
+        "prompt_tokens": 859,
+        "completion_tokens": 105,
+        "total_tokens": 964,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-18T11:39:53.708Z",
+    "interactionType": "text",
+    "messages": [
+      {
+        "role": "user",
+        "content": "selam"
+      },
+      {
+        "role": "assistant",
+        "content": "Merhaba! Size nasıl yardımcı olabilirim?"
+      },
+      {
+        "role": "user",
+        "content": "grafen oksit çeşitleri nelerdir"
+      },
+      {
+        "role": "assistant",
+        "content": "Maalesef grafen oksit ürünleri katalogumuzda bulunmamaktadır. Ancak yüksek kaliteli grafen nanoplatelets ürünümüzü inceleyebilirsiniz. Enerji depolama uygulamaları için ideal bir seçenektir. detaylı bilgiye [buradan](https://www.nanokar.com/products/grp-001) ulaşabilirsiniz."
+      },
+      {
+        "role": "user",
+        "content": "bakır tozu çeşitleri"
+      },
+      {
+        "role": "assistant",
+        "content": "Maalesef bakır tozu ürünleri katalogumuzda bulunmamaktadır. Ancak size yüksek saflıkta ve sertifikalı olan Titanium Nitride (TiN) Tozu ürünümüzü önerebilirim. Kaplama uygulamaları ve seramik üretimi için idealdir. Detaylı bilgiye [buradan](https://www.nanokar.com/products/tin-001) ulaşabilirsiniz."
+      }
+    ],
+    "metadata": {
+      "tokens": {
+        "prompt_tokens": 981,
+        "completion_tokens": 111,
+        "total_tokens": 1092,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      }
+    }
+  }
+]

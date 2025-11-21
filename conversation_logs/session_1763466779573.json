@@ -1,0 +1,72 @@
+[
+  {
+    "timestamp": "2025-11-18T11:53:03.881Z",
+    "interactionType": "text",
+    "messages": [
+      {
+        "role": "user",
+        "content": "sselamlar"
+      },
+      {
+        "role": "assistant",
+        "content": "Merhaba! Size nasıl yardımcı olabilirim?"
+      }
+    ],
+    "metadata": {
+      "tokens": {
+        "prompt_tokens": 880,
+        "completion_tokens": 15,
+        "total_tokens": 895,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-18T11:53:25.527Z",
+    "interactionType": "text",
+    "messages": [
+      {
+        "role": "user",
+        "content": "sselamlar"
+      },
+      {
+        "role": "assistant",
+        "content": "Merhaba! Size nasıl yardımcı olabilirim?"
+      },
+      {
+        "role": "user",
+        "content": "mikronize çinko okssit arıyorum"
+      },
+      {
+        "role": "assistant",
+        "content": "Maalesef Mikronize Çinko Oksit ürünümüz bulunmamaktadır. Ancak alternatif olarak size Nano Gümüş Tozu ürünümüzü önerebilirim. Antibakteriyel uygulamalar için oldukça etkilidir. Fiyatı 2100 TL ve daha fazla bilgi için [buraya tıklayabilirsiniz](urunlinki)."
+      }
+    ],
+    "metadata": {
+      "tokens": {
+        "prompt_tokens": 917,
+        "completion_tokens": 98,
+        "total_tokens": 1015,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      }
+    }
+  }
+]

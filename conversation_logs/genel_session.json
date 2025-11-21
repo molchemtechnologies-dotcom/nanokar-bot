@@ -1,0 +1,12 @@
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "nano gümüş"
+    },
+    {
+      "role": "assistant",
+      "content": "Evet, stoklarımızda şunlar mevcut:<br><br>✅ <a href=\"https://www.nanokar.com.tr/kategori?ara=Nano%20G%C3%BCm%C3%BC%C5%9F%20100%20nm\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Nano Gümüş 100 nm</a><br>✅ <a href=\"https://www.nanokar.com.tr/kategori?ara=Nano%20G%C3%BCm%C3%BC%C5%9F%2048-78%20nm\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Nano Gümüş 48-78 nm</a><br>✅ <a href=\"https://www.nanokar.com.tr/kategori?ara=Nano%20G%C3%BCm%C3%BC%C5%9F%2020%20nm\" target=\"_blank\" style=\"color:#0056b3;font-weight:bold;\">Nano Gümüş 20 nm</a><br><br>Detaylar için linklere tıklayabilirsiniz."
+    }
+  ]
+}

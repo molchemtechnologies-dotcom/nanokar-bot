@@ -1,0 +1,72 @@
+[
+  {
+    "timestamp": "2025-11-18T14:01:05.050Z",
+    "interactionType": "text",
+    "messages": [
+      {
+        "role": "user",
+        "content": "sselamlar"
+      },
+      {
+        "role": "assistant",
+        "content": "Merhaba! Size nasıl yardımcı olabilirim?"
+      }
+    ],
+    "metadata": {
+      "tokens": {
+        "prompt_tokens": 880,
+        "completion_tokens": 15,
+        "total_tokens": 895,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-18T14:01:14.752Z",
+    "interactionType": "text",
+    "messages": [
+      {
+        "role": "user",
+        "content": "sselamlar"
+      },
+      {
+        "role": "assistant",
+        "content": "Merhaba! Size nasıl yardımcı olabilirim?"
+      },
+      {
+        "role": "user",
+        "content": "grafen fiyatları nedir"
+      },
+      {
+        "role": "assistant",
+        "content": "Tabii, Graphene Nanoplatelets (ID: GRP-001) ürünümüzün fiyatı 1250 TL'dir. Daha fazla bilgi için [buraya tıklayabilirsiniz.](ürün_linki)"
+      }
+    ],
+    "metadata": {
+      "tokens": {
+        "prompt_tokens": 910,
+        "completion_tokens": 56,
+        "total_tokens": 966,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      }
+    }
+  }
+]
