@@ -1,15 +1,13 @@
-// server.js - Nanokar AI Chatbot (FİNAL DÜZELTİLMİŞ SÜRÜM)
+// server.js - Nanokar AI Chatbot (FİNAL: Dosyadan Okuma + Mail + Ses)
 
 const express = require('express');
 const cors = require('cors');
-const axios = require('axios');
-const cheerio = require('cheerio');
 const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 const dotenv = require('dotenv');
 const { OpenAI } = require('openai');
-const Fuse = require('fuse.js');
+const Fuse = require('fuse.js'); // Arama motoru
 const { SpeechClient } = require('@google-cloud/speech');
 const { TextToSpeechClient } = require('@google-cloud/text-to-speech');
 const nodemailer = require('nodemailer');
@@ -26,7 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const upload = multer({ dest: 'uploads/' });
 
-// Google Cloud (Render için Environement Variable Kontrolü)
+// --- GOOGLE CLOUD (Render Ortamı İçin) ---
 if (process.env.GOOGLE_CREDENTIALS_JSON) {
     fs.writeFileSync('nanokar-key.json', process.env.GOOGLE_CREDENTIALS_JSON);
     process.env.GOOGLE_APPLICATION_CREDENTIALS = 'nanokar-key.json';
@@ -36,8 +34,8 @@ let speechClient, ttsClient;
 try {
     speechClient = new SpeechClient();
     ttsClient = new TextToSpeechClient();
-    console.log("✅ Google Cloud Ses Servisi Aktif");
-} catch (e) { console.log("⚠️ Google Cloud pasif (Key eksik olabilir)."); }
+    console.log("✅ Ses servisi aktif");
+} catch (e) { console.log("⚠️ Ses servisi pasif"); }
 
 // Klasörler
 if (!fs.existsSync('leads')) fs.mkdirSync('leads');
@@ -52,27 +50,37 @@ Sen Nanokar Nanoteknoloji şirketinin satış asistanısın.
 - Adres: Kurtköy, Pendik / İstanbul
 
 KURALLAR:
-1. Asla "bilmiyorum" deme. Bilmiyorsan "Satış temsilcimize iletiyorum" de.
+1. İletişim sorulursa SADECE yukarıdaki bilgileri ver.
 2. Ürün yoksa: "Size özel temin edebiliriz, lütfen İsim ve Telefonunuzu yazın" de.
-3. Müşteri numara verirse: "Bilgilerinizi aldım, en kısa sürede arayacağız" de.
+3. Müşteri numara verirse: "Bilgilerinizi aldım, sizi arayacağız" de.
 `;
 
-// --- ÜRÜN LİSTESİ (products.txt'den oku) ---
+// --- ÜRÜN YÜKLEME (products.txt) ---
 let localProductList = [];
 const productFilePath = path.join(__dirname, 'products.txt');
-if (fs.existsSync(productFilePath)) {
-    const data = fs.readFileSync(productFilePath, 'utf-8');
-    localProductList = data.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-}
-const fuse = new Fuse(localProductList.map(name => ({ name })), { keys: ['name'], includeScore: true, threshold: 0.4 });
+
+try {
+    if (fs.existsSync(productFilePath)) {
+        const data = fs.readFileSync(productFilePath, 'utf-8');
+        localProductList = data.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+        console.log(`✅ ${localProductList.length} ürün yüklendi.`);
+    }
+} catch (err) { console.error("Ürün dosyası okunamadı:", err); }
+
+// Fuse.js ile Bulanık Arama (Hatalı yazımları düzeltir)
+const fuse = new Fuse(localProductList.map(name => ({ name })), {
+    keys: ['name'],
+    includeScore: true,
+    threshold: 0.4
+});
 
 // --- MAİL GÖNDERME ---
 async function sendLeadEmail(name, phone, message) {
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: 'molchemtechnologies@gmail.com', // 🔴 KENDİ MAİLİNİ YAZ
-            pass: 'BURAYA_GMAIL_APP_SIFRESINI_YAZ' // 🔴 UYGULAMA ŞİFRESİNİ YAZ
+            user: 'molchemtechnologies@gmail.com', // 🔴 DEĞİŞTİRİN
+            pass: 'BURAYA_GMAIL_APP_SIFRESINI_YAZ' // 🔴 DEĞİŞTİRİN
         }
     });
 
@@ -80,11 +88,10 @@ async function sendLeadEmail(name, phone, message) {
         from: 'Nanokar Bot',
         to: 'sales@nanokar.com',
         subject: '🔔 Yeni Müşteri Talebi',
-        text: `Müşteri: ${name}\nTelefon: ${phone}\nMesaj: ${message}\n\nTarih: ${new Date().toLocaleString('tr-TR')}`
+        text: `Müşteri: ${name}\nTelefon: ${phone}\nMesaj: ${message}`
     };
 
-    try { await transporter.sendMail(mailOptions); console.log("📧 Mail gönderildi."); } 
-    catch(e) { console.error("❌ Mail hatası:", e); }
+    try { await transporter.sendMail(mailOptions); } catch(e) { console.error("Mail hatası:", e); }
 }
 
 // --- LEAD KAYIT ---
@@ -104,7 +111,7 @@ async function checkAndSaveLead(text) {
             const logEntry = `TARİH: ${new Date().toLocaleString('tr-TR')} | İSİM: ${result.name} | TEL: ${result.phone}\n`;
             
             fs.appendFileSync(path.join(__dirname, 'leads', 'Musteri_Talepleri.txt'), logEntry);
-            sendLeadEmail(result.name, result.phone, text); // Mail at
+            sendLeadEmail(result.name, result.phone, text);
 
             return { saved: true, name: result.name };
         } catch (e) { console.error(e); }
@@ -112,8 +119,7 @@ async function checkAndSaveLead(text) {
     return { saved: false };
 }
 
-// --- API ENDPOINTS ---
-
+// --- API ---
 app.get('/admin-leads', (req, res) => {
     const filePath = path.join(__dirname, 'leads', 'Musteri_Talepleri.txt');
     const content = fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf-8') : 'Kayıt yok.';
@@ -125,8 +131,9 @@ app.post('/api/chat', async (req, res) => {
     const userMsg = messages[messages.length - 1].content;
 
     const lead = await checkAndSaveLead(userMsg);
-    if (lead.saved) return res.json({ success: true, message: `Teşekkürler ${lead.name}, bilgilerinizi aldım. Sizi arayacağız.` });
+    if (lead.saved) return res.json({ success: true, message: `Teşekkürler ${lead.name}, bilgilerinizi aldım.` });
 
+    // Yerel dosyadan arama yap
     const searchResult = fuse.search(userMsg);
     let context = "";
     if (searchResult.length > 0) {
@@ -151,16 +158,15 @@ app.post('/api/chat', async (req, res) => {
     res.json({ success: true, message: botMsg });
 });
 
+// Ses API
 app.post('/api/voice-chat', upload.single('audio'), async (req, res) => {
     if (!req.file) return res.status(400).json({ error: 'Ses yok' });
-
     try {
         const audioBytes = await fs.promises.readFile(req.file.path);
         const [stt] = await speechClient.recognize({
             config: { languageCodes: ['tr-TR'], encoding: 'WEBM_OPUS' },
             audio: { content: audioBytes.toString('base64') }
         });
-        
         const text = stt.results[0].alternatives[0].transcript;
         
         const gpt = await openai.chat.completions.create({
@@ -177,7 +183,6 @@ app.post('/api/voice-chat', upload.single('audio'), async (req, res) => {
 
         res.json({ success: true, message: reply, audioBase64: tts.audioContent.toString('base64') });
     } catch (e) {
-        console.error(e);
         res.status(500).json({ error: 'Ses hatası' });
     } finally {
         if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
