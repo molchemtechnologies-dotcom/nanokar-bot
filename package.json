@@ -1,9 +1,8 @@
 {
   "name": "nanokar-chatbot-api",
   "version": "1.0.0",
-  "description": "Nanokar AI Chatbot",
+  "description": "Nanokar Chatbot",
   "main": "server.js",
-  "type": "commonjs",
   "scripts": {
     "start": "node server.js"
   },
