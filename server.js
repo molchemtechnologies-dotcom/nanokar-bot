@@ -1,15 +1,19 @@
+// server.js - Nanokar AI Chatbot (FİNAL - SES VE MAIL DÜZELTİLDİ)
+
 const express = require('express');
 const cors = require('cors');
-const axios = require('axios');
-const cheerio = require('cheerio');
 const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 const dotenv = require('dotenv');
 const { OpenAI } = require('openai');
 const Fuse = require('fuse.js');
+const { SpeechClient } = require('@google-cloud/speech');
+const { TextToSpeechClient } = require('@google-cloud/text-to-speech');
+const nodemailer = require('nodemailer');
 
 dotenv.config();
+
 const app = express();
 const port = process.env.PORT || 3001;
 
@@ -20,130 +24,171 @@ app.use(express.urlencoded({ extended: true }));
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const upload = multer({ dest: 'uploads/' });
 
-if (!fs.existsSync('leads')) fs.mkdirSync('leads');
-if (!fs.existsSync('conversation_logs')) fs.mkdirSync('conversation_logs');
+// --- GOOGLE CLOUD AYARLARI (RENDER İÇİN DÜZELTİLDİ) ---
+// Render'da 'GOOGLE_CREDENTIALS_JSON' environment variable'ı varsa onu dosyaya yaz
+if (process.env.GOOGLE_CREDENTIALS_JSON) {
+    fs.writeFileSync('google-key.json', process.env.GOOGLE_CREDENTIALS_JSON);
+    process.env.GOOGLE_APPLICATION_CREDENTIALS = 'google-key.json';
+}
 
-const userSessions = {};
-let localProductList = [];
-
-// Ürün Listesi
-const productFilePath = path.join(__dirname, 'products.txt');
+let speechClient, ttsClient;
 try {
-    if (fs.existsSync(productFilePath)) {
-        const data = fs.readFileSync(productFilePath, 'utf-8');
-        const uniqueLines = new Set(data.split('\n').map(line => line.trim()).filter(line => line.length > 0));
-        localProductList = Array.from(uniqueLines);
-        console.log(`✅ Ürün listesi: ${localProductList.length} adet.`);
+    speechClient = new SpeechClient();
+    ttsClient = new TextToSpeechClient();
+    console.log("✅ Google Cloud Ses Servisi Aktif");
+} catch (e) { 
+    console.error("❌ Google Cloud Hatası:", e.message); 
+}
+
+// Klasörler
+if (!fs.existsSync('leads')) fs.mkdirSync('leads');
+if (!fs.existsSync('uploads')) fs.mkdirSync('uploads');
+
+// --- BOT KİMLİĞİ (KESİN BİLGİLER) ---
+const SYSTEM_PROMPT = `
+Sen Nanokar Nanoteknoloji şirketinin satış asistanısın.
+İletişim Bilgileri: 
+- Telefon: +90 216 526 04 90
+- E-posta: sales@nanokar.com
+- Adres: Kurtköy, Pendik / İstanbul
+
+KURALLAR:
+1. İletişim sorulursa SADECE yukarıdaki bilgileri ver.
+2. Ürün yoksa veya fiyat sorulursa: "Size özel fiyat çalışması için lütfen İsim, Soyisim ve Telefon numaranızı yazar mısınız?" de.
+3. Müşteri numara verirse: "Bilgilerinizi aldım, satış temsilcimiz en kısa sürede size ulaşacaktır." de.
+`;
+
+// --- ÜRÜN LİSTESİ ---
+let localProductList = [];
+const productFilePath = path.join(__dirname, 'products.txt');
+if (fs.existsSync(productFilePath)) {
+    const data = fs.readFileSync(productFilePath, 'utf-8');
+    localProductList = data.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+}
+const fuse = new Fuse(localProductList.map(name => ({ name })), { keys: ['name'], includeScore: true, threshold: 0.4 });
+
+// --- MAIL FONKSİYONU (BİLGİLERİNİ GİR!) ---
+async function sendLeadEmail(name, phone, message) {
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'molchemtechnologies@gmail.com', // 🔴 KENDİ MAİLİNİ YAZ
+            pass: 'BURAYA_GMAIL_APP_SIFRESINI_YAZ' // 🔴 GMAIL UYGULAMA ŞİFRENİ YAZ
+        }
+    });
+
+    const mailOptions = {
+        from: 'Nanokar Bot',
+        to: 'sales@nanokar.com', 
+        subject: '🔔 Yeni Müşteri Talebi',
+        text: `Müşteri: ${name}\nTelefon: ${phone}\nMesaj: ${message}\n\nTarih: ${new Date().toLocaleString('tr-TR')}`
+    };
+
+    try { await transporter.sendMail(mailOptions); console.log("📧 Mail gönderildi."); } 
+    catch(e) { console.error("❌ Mail hatası:", e); }
+}
+
+// --- LEAD KAYIT ---
+async function checkAndSaveLead(text) {
+    if (text.match(/(\+90|0)?\s*5\d{2}/)) {
+        try {
+            const response = await openai.chat.completions.create({
+                model: 'gpt-4o-mini',
+                messages: [
+                    { role: 'system', content: 'Metinden İSİM ve TELEFONU JSON ver: {"name": "...", "phone": "..."}' },
+                    { role: 'user', content: text }
+                ],
+                response_format: { type: "json_object" }
+            });
+            
+            const result = JSON.parse(response.choices[0].message.content);
+            const logEntry = `TARİH: ${new Date().toLocaleString('tr-TR')} | İSİM: ${result.name} | TEL: ${result.phone}\n`;
+            
+            fs.appendFileSync(path.join(__dirname, 'leads', 'Musteri_Talepleri.txt'), logEntry);
+            
+            // Mail Gönder
+            sendLeadEmail(result.name, result.phone, text);
+
+            return { saved: true, name: result.name };
+        } catch (e) { console.error(e); }
     }
-} catch (err) { console.error("Dosya hatası:", err); }
+    return { saved: false };
+}
 
-const fuse = new Fuse(localProductList, { includeScore: true, threshold: 0.3 });
+// --- API ENDPOINTS ---
 
-// --- 🔥 YENİ: MÜŞTERİ PANELİ (Buradan Göreceksin) ---
+// Admin Paneli
 app.get('/admin-leads', (req, res) => {
     const filePath = path.join(__dirname, 'leads', 'Musteri_Talepleri.txt');
-    if (fs.existsSync(filePath)) {
-        const content = fs.readFileSync(filePath, 'utf-8');
-        // Basit bir HTML ile gösterelim
-        res.send(`
-            <html>
-            <head><title>Müşteri Talepleri</title></head>
-            <body style="font-family:sans-serif; padding:20px; background:#f4f4f9;">
-                <h1>📋 Müşteri İletişim Talepleri</h1>
-                <pre style="background:white; padding:20px; border-radius:10px; border:1px solid #ccc;">${content}</pre>
-                <br><button onclick="location.reload()">Sayfayı Yenile</button>
-            </body>
-            </html>
-        `);
-    } else {
-        res.send('<h1>Henüz kayıtlı müşteri talebi yok.</h1>');
-    }
+    const content = fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf-8') : 'Kayıt yok.';
+    res.send(`<pre style="font-family:Arial; padding:20px;">${content}</pre>`);
 });
 
-app.get('/widget', (req, res) => {
-    const indexPath = path.join(__dirname, 'index.html');
-    if (fs.existsSync(indexPath)) res.sendFile(indexPath);
-    else res.status(404).send('Index.html bulunamadı');
-});
-
-// --- Yardımcı Fonksiyonlar ---
-async function extractContactInfo(text) {
-    try {
-        const response = await openai.chat.completions.create({
-            model: 'gpt-4o-mini',
-            messages: [{ role: 'system', content: 'Metinden İSİM ve TELEFON numarasını çıkar. JSON: { "name": "...", "phone": "..." }. Yoksa null.' }, { role: 'user', content: text }],
-            response_format: { type: "json_object" }
-        });
-        return JSON.parse(response.choices[0].message.content);
-    } catch (e) { return null; }
-}
-
-async function analyzeIntentAndProducts(userMessage) {
-    try {
-        const response = await openai.chat.completions.create({
-            model: 'gpt-4o-mini',
-            messages: [{ role: 'system', content: 'Analiz et JSON döndür. 1. Ürün sorusu: { "intent": "SEARCH", "products": ["Ürün1"] }. 2. Sohbet: { "intent": "CHAT", "products": [] }.' }, { role: 'user', content: userMessage }],
-            response_format: { type: "json_object" }
-        });
-        return JSON.parse(response.choices[0].message.content);
-    } catch (error) { return { intent: "CHAT", products: [] }; }
-}
-
-async function searchProducts(keywords) {
-    let allFoundProducts = [];
-    const addedProductNames = new Set();
-    if (localProductList.length > 0 && keywords.length > 0) {
-        for (const keyword of keywords) {
-            const fuseResults = fuse.search(keyword);
-            for (const result of fuseResults.slice(0, 3)) {
-                if (!addedProductNames.has(result.item)) {
-                    allFoundProducts.push({ name: result.item, link: `https://www.nanokar.com.tr/kategori?ara=${encodeURIComponent(result.item)}` });
-                    addedProductNames.add(result.item);
-                }
-            }
-        }
-    }
-    return allFoundProducts;
-}
-
-// --- CHAT API ---
+// Chat
 app.post('/api/chat', async (req, res) => {
-    const { messages, sessionId } = req.body;
-    const currentSessionId = sessionId || 'genel_session';
-    const lastUserMessage = messages[messages.length - 1].content;
+    const { messages } = req.body;
+    const userMsg = messages[messages.length - 1].content;
 
-    if (userSessions[currentSessionId] && userSessions[currentSessionId].status === 'waiting_for_contact') {
-        const contactData = await extractContactInfo(lastUserMessage);
-        if (contactData && contactData.name && contactData.phone) {
-            const requestedProduct = userSessions[currentSessionId].productRequest;
-            const leadContent = `Tarih: ${new Date().toLocaleString('tr-TR')}\nİsim: ${contactData.name}\nTel: ${contactData.phone}\nAradığı Ürün: ${requestedProduct}\n--------------------------\n`;
-            
-            fs.appendFileSync(`leads/Musteri_Talepleri.txt`, leadContent);
-            delete userSessions[currentSessionId];
-            
-            res.json({ success: true, message: `Bilgilerinizi aldım ${contactData.name}. Danışmanlarımız size dönüş yapacaktır.` });
-            return;
-        }
+    const lead = await checkAndSaveLead(userMsg);
+    if (lead.saved) return res.json({ success: true, message: `Teşekkürler ${lead.name}, bilgilerinizi aldım. Sizi arayacağız.` });
+
+    const searchResult = fuse.search(userMsg);
+    let context = "";
+    if (searchResult.length > 0) {
+        context = "Sitemizde bulunan ürünler:\n" + searchResult.slice(0, 3).map(r => {
+            const name = r.item.name;
+            const link = `https://www.nanokar.com.tr/kategori?ara=${encodeURIComponent(name)}`;
+            return `- ${name} (Link: ${link})`;
+        }).join("\n");
     }
 
-    const analysis = await analyzeIntentAndProducts(lastUserMessage);
-    let botMessage = "";
+    const gpt = await openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [
+            { role: 'system', content: SYSTEM_PROMPT + "\n\nÜRÜN BİLGİSİ:\n" + context },
+            ...messages
+        ]
+    });
 
-    if (analysis.intent === "SEARCH" && analysis.products.length > 0) {
-        const foundProducts = await searchProducts(analysis.products);
-        if (foundProducts.length > 0) {
-            botMessage = `Evet, stoklarımızda şunlar mevcut:<br><br>`;
-            foundProducts.forEach(p => { botMessage += `✅ <a href="${p.link}" target="_blank" style="color:#0056b3;font-weight:bold;">${p.name}</a><br>`; });
-        } else {
-            const missingProducts = analysis.products.join(", ");
-            botMessage = `Web sitemizde <b>"${missingProducts}"</b> görünmüyor ama temin edebiliriz.<br>Size ulaşabilmemiz için lütfen <b>İsim, Soyisim ve Telefon</b> numaranızı yazar mısınız?`;
-            userSessions[currentSessionId] = { status: 'waiting_for_contact', productRequest: missingProducts };
-        }
-    } else {
-        const gpt = await openai.chat.completions.create({ model: 'gpt-4o-mini', messages: [{ role: 'system', content: 'Sen Nanokar AI asistanısın. Nazik ve satıcı odaklı ol.' }, ...messages] });
-        botMessage = gpt.choices[0].message.content;
-    }
-    res.json({ success: true, message: botMessage });
+    let botMsg = gpt.choices[0].message.content;
+    botMsg = botMsg.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" style="color:blue;">Ürüne Git</a>');
+
+    res.json({ success: true, message: botMsg });
 });
 
-app.listen(port, () => { console.log(`Sunucu Çalışıyor: ${port}`); });
+// Sesli Chat
+app.post('/api/voice-chat', upload.single('audio'), async (req, res) => {
+    if (!req.file) return res.status(400).json({ error: 'Ses yok' });
+
+    try {
+        const audioBytes = await fs.promises.readFile(req.file.path);
+        
+        const [stt] = await speechClient.recognize({
+            config: { languageCodes: ['tr-TR'], encoding: 'WEBM_OPUS' },
+            audio: { content: audioBytes.toString('base64') }
+        });
+        
+        const text = stt.results[0].alternatives[0].transcript;
+        
+        const gpt = await openai.chat.completions.create({
+            model: 'gpt-4o-mini',
+            messages: [{ role: 'system', content: SYSTEM_PROMPT + " Kısa cevap ver." }, { role: 'user', content: text }]
+        });
+        const reply = gpt.choices[0].message.content;
+
+        const [tts] = await ttsClient.synthesizeSpeech({
+            input: { text: reply },
+            voice: { languageCode: 'tr-TR', ssmlGender: 'NEUTRAL' },
+            audioConfig: { audioEncoding: 'MP3' },
+        });
+
+        res.json({ success: true, message: reply, audioBase64: tts.audioContent.toString('base64') });
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: 'Ses hatası' });
+    } finally {
+        if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+    }
+});
+
+app.listen(port, () => console.log(`Server running on port ${port}`));
