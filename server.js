@@ -1,4 +1,4 @@
-// server.js - FORCE UPDATE SÜRÜMÜ (Tüm Hatalar Giderildi)
+// server.js - FİNAL SÜRÜM (Link Destekli, Tüm Hatalar Giderildi)
 
 const express = require('express');
 const cors = require('cors');
@@ -29,6 +29,7 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const upload = multer({ dest: 'uploads/' });
 
 // --- AYARLAR ---
+// Lütfen buradaki ID'nin doğru olduğundan emin olun!
 const SPREADSHEET_ID = "1M44lWMSXavUcIacCSfNb-o55aWmaayx5BpLXuiyBEKs";
 
 // --- GOOGLE CLOUD ANAHTAR YÖNETİMİ ---
@@ -54,15 +55,16 @@ try {
 if (!fs.existsSync('leads')) fs.mkdirSync('leads');
 if (!fs.existsSync('uploads')) fs.mkdirSync('uploads');
 
-// --- SİSTEM PROMPTU ---
+// --- SİSTEM PROMPTU (LİNK KURALI EKLENDİ) ---
 const SYSTEM_PROMPT = `
 Sen Nanokar Nanoteknoloji şirketinin satış asistanısın.
 İletişim: Tel: +90 216 526 04 90, Mail: sales@nanokar.com
 
 KURALLAR:
 1. Ürün fiyatlarını ve stok durumunu SADECE veritabanından çekerek söyle.
-2. Eğer ürün veritabanında YOKSA veya müşteri ÖZEL BİR ŞEY isterse: "Size özel fiyat çalışması yapabilmemiz için lütfen İsim, Soyisim ve Telefon numaranızı yazar mısınız?" de.
-3. Müşteri bilgilerini verirse: "Bilgilerinizi aldım [İsim], en kısa sürede dönüş yapacağız." de.
+2. Ürün ismini söylerken MUTLAKA şu HTML formatında link ver: <a href="ÜRÜN_LİNKİ" target="_blank">ÜRÜN ADI</a>
+3. Eğer ürün veritabanında YOKSA veya müşteri ÖZEL BİR ŞEY isterse: "Size özel fiyat çalışması yapabilmemiz için lütfen İsim, Soyisim ve Telefon numaranızı yazar mısınız?" de.
+4. Müşteri bilgilerini verirse: "Bilgilerinizi aldım [İsim], en kısa sürede dönüş yapacağız." de.
 `;
 
 // --- GITHUB ÜRÜN ENTEGRASYONU ---
@@ -74,8 +76,12 @@ async function fetchProducts() {
         const response = await axios.get(PRODUCTS_URL);
         let data = response.data;
         if (typeof data === 'string') { try { data = JSON.parse(data); } catch(e) {} }
+        // URL alanı eksikse, URL alanını ekleyerek içeriği zenginleştir
         if (data && data.products) {
-            globalProducts = data.products;
+            globalProducts = data.products.map(p => ({
+                ...p,
+                url: p.url || `https://nanokar.com.tr/urun/${p.name.replace(/\s/g, '-')}` // Link alanı yoksa varsayılan link ekler
+            }));
             console.log(`✅ ${globalProducts.length} ürün yüklendi.`);
             return true;
         }
@@ -132,7 +138,7 @@ async function sendLeadEmail(name, phone, message) {
     
     const transporter = nodemailer.createTransport({
         host: 'smtp.gmail.com',
-        port: 465, // SSL Portu
+        port: 465, 
         secure: true, 
         auth: { 
             user: process.env.EMAIL_USER, 
@@ -195,10 +201,11 @@ app.post('/api/chat', async (req, res) => {
         let context = "BAĞLAM: Aranan ürün veritabanında bulunamadı. Müşteriden iletişim bilgisi iste.";
         
         if (foundProducts.length > 0) {
+            // LİNK BİLGİSİ CONTEXT'E URL OLARAK GÖNDERİLİYOR
             const productDetails = foundProducts.map(p => 
-                `ÜRÜN: ${p.name}\nFİYAT: ${p.price} ${p.currency}\nSTOK: ${p.stock_status}\nAÇIKLAMA: ${p.description}`
+                `ÜRÜN: ${p.name}\nFİYAT: ${p.price} ${p.currency}\nSTOK: ${p.stock_status}\nLİNK: ${p.url}\nAÇIKLAMA: ${p.description}`
             ).join("\n---\n");
-            context = `BAĞLAM: Ürün bulundu. Fiyatı söyle:\n${productDetails}`;
+            context = `BAĞLAM: Ürün bulundu. Cevap verirken, ürüne ait linki kullanarak HTML formatında (KURALLAR 2) cevap ver. \n${productDetails}`;
         }
 
         const gpt = await openai.chat.completions.create({
@@ -219,7 +226,7 @@ app.post('/api/voice-chat', upload.single('audio'), async (req, res) => {
     try {
         const audioBytes = await fs.promises.readFile(req.file.path);
         
-        // Düzeltilmiş Ses Ayarı
+        // Ses Ayarı (languageCode: 'tr-TR')
         const [stt] = await speechClient.recognize({
             config: { 
                 languageCode: 'tr-TR', 
@@ -243,9 +250,9 @@ app.post('/api/voice-chat', upload.single('audio'), async (req, res) => {
         
         if (globalProducts.length === 0) await fetchProducts();
         const foundProducts = findProduct(text);
+        
         let context = foundProducts.length > 0 ? 
-            `Bulunan: ${foundProducts[0].name}, Fiyat: ${foundProducts[0].price} ${foundProducts[0].currency}` : 
-            "Ürün bulunamadı.";
+            `Bulunan: ${foundProducts[0].name}, Fiyat: ${foundProducts[0].price}. Link: ${foundProducts[0].url}` : "Ürün bulunamadı.";
 
         const gpt = await openai.chat.completions.create({
              model: 'gpt-4o-mini',
@@ -254,7 +261,7 @@ app.post('/api/voice-chat', upload.single('audio'), async (req, res) => {
         
         const reply = gpt.choices[0].message.content;
         const [tts] = await ttsClient.synthesizeSpeech({
-            input: { text: reply },
+            input: { text: reply.replace(/<[^>]*>/g, '') }, // Sesi okurken HTML kodlarını temizle
             voice: { languageCode: 'tr-TR', ssmlGender: 'NEUTRAL' },
             audioConfig: { audioEncoding: 'MP3' },
         });
