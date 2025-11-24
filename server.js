@@ -1,4 +1,4 @@
-// server.js - FİNAL SÜRÜM (Voice Fix + Mail SSL + Sheets + Products)
+// server.js - FORCE UPDATE SÜRÜMÜ (Tüm Hatalar Giderildi)
 
 const express = require('express');
 const cors = require('cors');
@@ -60,7 +60,7 @@ Sen Nanokar Nanoteknoloji şirketinin satış asistanısın.
 İletişim: Tel: +90 216 526 04 90, Mail: sales@nanokar.com
 
 KURALLAR:
-1. Verilen ürün bilgisini kullanarak fiyat ve stok durumunu net söyle.
+1. Ürün fiyatlarını ve stok durumunu SADECE veritabanından çekerek söyle.
 2. Eğer ürün veritabanında YOKSA veya müşteri ÖZEL BİR ŞEY isterse: "Size özel fiyat çalışması yapabilmemiz için lütfen İsim, Soyisim ve Telefon numaranızı yazar mısınız?" de.
 3. Müşteri bilgilerini verirse: "Bilgilerinizi aldım [İsim], en kısa sürede dönüş yapacağız." de.
 `;
@@ -122,18 +122,17 @@ async function saveToGoogleSheets(name, phone, message) {
         console.log("✅ Google Sheet'e kayıt başarılı!");
 
     } catch (e) {
-        console.error("❌ Google Sheets Hatası:", e);
+        console.error("❌ Google Sheets Hatası (Detay):", e.message);
     }
 }
 
-// --- MAİL VE LEAD ---
+// --- MAİL GÖNDERME (SSL PORT 465) ---
 async function sendLeadEmail(name, phone, message) {
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) return;
     
-    // GÜVENLİ PORT AYARI (465 SSL)
     const transporter = nodemailer.createTransport({
         host: 'smtp.gmail.com',
-        port: 465,
+        port: 465, // SSL Portu
         secure: true, 
         auth: { 
             user: process.env.EMAIL_USER, 
@@ -145,11 +144,11 @@ async function sendLeadEmail(name, phone, message) {
         await transporter.sendMail({
             from: 'Nanokar Bot',
             to: 'sales@nanokar.com',
-            subject: '🔔 Yeni Müşteri Talebi (Web)',
+            subject: '🔔 Yeni Müşteri Talebi',
             text: `İsim: ${name}\nTel: ${phone}\nMesaj: ${message}`
         });
         console.log("✅ Mail başarıyla gönderildi.");
-    } catch(e) { console.error("❌ Mail gönderme hatası:", e); }
+    } catch(e) { console.error("❌ Mail hatası:", e.message); }
 }
 
 async function checkAndSaveLead(text) {
@@ -158,21 +157,17 @@ async function checkAndSaveLead(text) {
             const response = await openai.chat.completions.create({
                 model: 'gpt-4o-mini',
                 messages: [
-                    { role: 'system', content: 'Metinden İSİM ve TELEFONU JSON ver. Eğer isim yoksa "Belirtilmedi" yaz: {"name": "...", "phone": "..."}' },
+                    { role: 'system', content: 'Metinden İSİM ve TELEFONU JSON ver. İsim yoksa "Belirtilmedi" yaz: {"name": "...", "phone": "..."}' },
                     { role: 'user', content: text }
                 ],
                 response_format: { type: "json_object" }
             });
             const res = JSON.parse(response.choices[0].message.content);
             
-            // 1. Dosyaya Yaz
-            fs.appendFileSync(path.join(__dirname, 'leads', 'Musteri_Talepleri.txt'), 
-                `${new Date().toLocaleString()} | ${res.name} | ${res.phone}\n`);
-            
-            // 2. Google Sheet'e Yaz
+            // 1. Google Sheet'e Yaz
             await saveToGoogleSheets(res.name, res.phone, text);
 
-            // 3. Mail At
+            // 2. Mail At
             sendLeadEmail(res.name, res.phone, text);
             
             return { saved: true, name: res.name };
@@ -218,24 +213,24 @@ app.post('/api/chat', async (req, res) => {
     }
 });
 
-// Sesli Sohbet Route (FIXED)
+// Sesli Sohbet Route
 app.post('/api/voice-chat', upload.single('audio'), async (req, res) => {
     if (!req.file) return res.status(400).json({ error: 'Ses yok' });
     try {
         const audioBytes = await fs.promises.readFile(req.file.path);
         
-        // 🚨 KRİTİK DÜZELTME: languageCode (Tekil) kullanıldı
+        // Düzeltilmiş Ses Ayarı
         const [stt] = await speechClient.recognize({
             config: { 
-                languageCode: 'tr-TR',  // <-- Burası düzeltildi
+                languageCode: 'tr-TR', 
                 encoding: 'WEBM_OPUS' 
             },
             audio: { content: audioBytes.toString('base64') }
         });
         
         const text = stt.results[0].alternatives[0].transcript;
-
         const lead = await checkAndSaveLead(text);
+        
         if (lead.saved) {
              const reply = `Teşekkürler ${lead.name}, sizi arayacağız.`;
              const [tts] = await ttsClient.synthesizeSpeech({
@@ -247,7 +242,6 @@ app.post('/api/voice-chat', upload.single('audio'), async (req, res) => {
         }
         
         if (globalProducts.length === 0) await fetchProducts();
-
         const foundProducts = findProduct(text);
         let context = foundProducts.length > 0 ? 
             `Bulunan: ${foundProducts[0].name}, Fiyat: ${foundProducts[0].price} ${foundProducts[0].currency}` : 
@@ -267,7 +261,7 @@ app.post('/api/voice-chat', upload.single('audio'), async (req, res) => {
         res.json({ success: true, message: reply, audioBase64: tts.audioContent.toString('base64') });
     } catch (e) {
         console.error("Sesli sohbet hatası:", e);
-        res.status(500).json({ error: 'Ses hatası: ' + e.message });
+        res.status(500).json({ error: 'Ses hatası' });
     } finally {
         if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
     }
