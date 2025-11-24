@@ -1,4 +1,4 @@
-// server.js - FİNAL SÜRÜM (Mail Port Fix + Google Sheets + GitHub Ürün)
+// server.js - FİNAL SÜRÜM (Voice Fix + Mail SSL + Sheets + Products)
 
 const express = require('express');
 const cors = require('cors');
@@ -126,15 +126,15 @@ async function saveToGoogleSheets(name, phone, message) {
     }
 }
 
-// --- MAİL VE LEAD (GÜNCELLENDİ: PORT 465 SSL) ---
+// --- MAİL VE LEAD ---
 async function sendLeadEmail(name, phone, message) {
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) return;
     
-    // Render için güvenli mail ayarı (Fix)
+    // GÜVENLİ PORT AYARI (465 SSL)
     const transporter = nodemailer.createTransport({
         host: 'smtp.gmail.com',
         port: 465,
-        secure: true, // SSL kullanımı
+        secure: true, 
         auth: { 
             user: process.env.EMAIL_USER, 
             pass: process.env.EMAIL_PASS 
@@ -193,11 +193,9 @@ app.post('/api/chat', async (req, res) => {
 
         if (globalProducts.length === 0) await fetchProducts();
 
-        // Lead Kontrolü
         const lead = await checkAndSaveLead(msg);
         if (lead.saved) return res.json({ success: true, message: `Bilgilerinizi aldım ${lead.name}. Satış temsilcimiz en kısa sürede size dönüş yapacaktır.` });
 
-        // Ürün Arama
         const foundProducts = findProduct(msg);
         let context = "BAĞLAM: Aranan ürün veritabanında bulunamadı. Müşteriden iletişim bilgisi iste.";
         
@@ -220,15 +218,21 @@ app.post('/api/chat', async (req, res) => {
     }
 });
 
-// Sesli Sohbet
+// Sesli Sohbet Route (FIXED)
 app.post('/api/voice-chat', upload.single('audio'), async (req, res) => {
     if (!req.file) return res.status(400).json({ error: 'Ses yok' });
     try {
         const audioBytes = await fs.promises.readFile(req.file.path);
+        
+        // 🚨 KRİTİK DÜZELTME: languageCode (Tekil) kullanıldı
         const [stt] = await speechClient.recognize({
-            config: { languageCodes: ['tr-TR'], encoding: 'WEBM_OPUS' },
+            config: { 
+                languageCode: 'tr-TR',  // <-- Burası düzeltildi
+                encoding: 'WEBM_OPUS' 
+            },
             audio: { content: audioBytes.toString('base64') }
         });
+        
         const text = stt.results[0].alternatives[0].transcript;
 
         const lead = await checkAndSaveLead(text);
@@ -262,10 +266,8 @@ app.post('/api/voice-chat', upload.single('audio'), async (req, res) => {
         });
         res.json({ success: true, message: reply, audioBase64: tts.audioContent.toString('base64') });
     } catch (e) {
-        // Ses hatası olsa bile kullanıcıya metin olarak dönmek daha iyidir,
-        // ama şimdilik hata mesajı veriyoruz.
-        console.error("Sesli sohbet hatası (API aktif mi?):", e);
-        res.status(500).json({ error: 'Ses hatası' });
+        console.error("Sesli sohbet hatası:", e);
+        res.status(500).json({ error: 'Ses hatası: ' + e.message });
     } finally {
         if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
     }
