@@ -1,133 +1,64 @@
-[
-  {
-    "id": "TIN-001",
-    "name": "Titanium Nitride (TiN) Tozu",
-    "category": "Metal Tozları",
-    "price": 850,
-    "currency": "TL",
-    "purity": "99.9%",
-    "particleSize": "40-60 nm",
-    "stock": true,
-    "description": "Yüksek saflıkta titanyum nitrür tozu. Kaplama uygulamaları ve seramik üretimi için ideal.",
-    "usage": [
-      "Sert kaplamalar",
-      "Takım kaplaması",
-      "Dekoratif kaplamalar",
-      "Elektronik uygulamalar"
-    ],
-    "specifications": {
-      "appearance": "Altın sarısı toz",
-      "density": "5.22 g/cm³",
-      "meltingPoint": "2950°C",
-      "packaging": "100g, 500g, 1kg"
+{
+  "products": [
+    {
+      "id": "NK-001",
+      "name": "Endüstriyel Grafen (Graphene)",
+      "category": "Nanomalzemeler",
+      "description": "Yüksek elektrik ve ısı iletkenliğine sahip, çok katmanlı endüstriyel sınıf grafen tozu. Kompozit malzemeler ve enerji depolama için uygundur.",
+      "price": 1500.00,
+      "currency": "TL",
+      "stock_status": "Stokta Var",
+      "keywords": ["grafen", "graphene", "iletken", "karbon", "nanotüp"],
+      "specs": {
+        "saflık": "%99.5",
+        "parçacık_boyutu": "5-10 mikron",
+        "yüzey_alanı": "500 m2/g"
+      }
     },
-    "images": [
-      "/images/products/tin-powder.jpg"
-    ]
-  },
-  {
-    "id": "GRP-001",
-    "name": "Graphene Nanoplatelets",
-    "category": "Nano Grafen",
-    "price": 1250,
-    "currency": "TL",
-    "purity": "99.5%",
-    "particleSize": "2-7 μm",
-    "stock": true,
-    "description": "Yüksek kaliteli grafen nanoplakalar. Kompozit malzemeler ve enerji depolama uygulamaları için.",
-    "usage": [
-      "Kompozit takviyesi",
-      "Batarya elektrodu",
-      "Isı yönetimi",
-      "Elektrik iletkenliği"
-    ],
-    "specifications": {
-      "appearance": "Siyah toz",
-      "thickness": "6-10 nm",
-      "surfaceArea": "500-750 m²/g",
-      "packaging": "10g, 50g, 100g"
+    {
+      "id": "NK-002",
+      "name": "Nano Gümüş Tozu (Nano Silver)",
+      "category": "Metal Tozları",
+      "description": "Antibakteriyel özellikli, yüksek saflıkta küresel nano gümüş tozu. İletken mürekkepler ve medikal kaplamalar için idealdir.",
+      "price": 3200.00,
+      "currency": "TL",
+      "stock_status": "Stokta Var",
+      "keywords": ["gümüş", "silver", "nano gümüş", "antibakteriyel", "iletken boya"],
+      "specs": {
+        "saflık": "%99.9",
+        "parçacık_boyutu": "20-50 nm",
+        "renk": "Siyah/Gri"
+      }
     },
-    "images": [
-      "/images/products/graphene.jpg"
-    ]
-  },
-  {
-    "id": "HAP-001",
-    "name": "Hidroksiapatit (HA) Tozu",
-    "category": "Seramik Tozlar",
-    "price": 650,
-    "currency": "TL",
-    "purity": "99%",
-    "particleSize": "20-80 nm",
-    "stock": true,
-    "description": "Biyouyumlu hidroksiapatit nano tozu. Medikal implantlar ve kemik doku mühendisliği için.",
-    "usage": [
-      "Kemik implantları",
-      "Diş kaplama",
-      "Doku mühendisliği",
-      "İlaç taşıyıcı sistemler"
-    ],
-    "specifications": {
-      "appearance": "Beyaz toz",
-      "formula": "Ca10(PO4)6(OH)2",
-      "caToP": "1.67",
-      "packaging": "50g, 100g, 500g"
+    {
+      "id": "NK-003",
+      "name": "Demir Tozu (Iron Powder)",
+      "category": "Endüstriyel Tozlar",
+      "description": "Toz metalurjisi ve mıknatıs yapımında kullanılan su atomize demir tozu.",
+      "price": 450.00,
+      "currency": "TL",
+      "stock_status": "Sınırlı Stok",
+      "keywords": ["demir", "iron", "metal tozu", "manyetik", "toz metalurjisi"],
+      "specs": {
+        "saflık": "%98",
+        "parçacık_boyutu": "100 mesh",
+        "üretim_yöntemi": "Su Atomizasyonu"
+      }
     },
-    "images": [
-      "/images/products/hydroxyapatite.jpg"
-    ]
-  },
-  {
-    "id": "AGN-001",
-    "name": "Nano Gümüş Tozu",
-    "category": "Metal Tozları",
-    "price": 2100,
-    "currency": "TL",
-    "purity": "99.9%",
-    "particleSize": "20-40 nm",
-    "stock": false,
-    "description": "Ultra saf nano gümüş partiküller. Antibakteriyel uygulamalar ve elektrik iletkenliği için.",
-    "usage": [
-      "Antibakteriyel kaplamalar",
-      "İletken mürekkepler",
-      "Tıbbi tekstiller",
-      "Elektronik baskı"
-    ],
-    "specifications": {
-      "appearance": "Koyu gri/siyah toz",
-      "purity": "99.9%",
-      "form": "Küresel partiküller",
-      "packaging": "5g, 10g, 25g"
-    },
-    "images": [
-      "/images/products/silver-nano.jpg"
-    ],
-    "estimatedRestockDate": "2024-12-15"
-  },
-  {
-    "id": "FEO-001",
-    "name": "Nano Demir Oksit (Fe3O4)",
-    "category": "Metal Oksitler",
-    "price": 480,
-    "currency": "TL",
-    "purity": "98%",
-    "particleSize": "15-25 nm",
-    "stock": true,
-    "description": "Manyetik nano demir oksit. Kataliz, manyetik ayırma ve MRI kontrast ajanı olarak kullanılır.",
-    "usage": [
-      "Manyetik ayırma",
-      "Kataliz uygulamaları",
-      "MRI kontrast ajanı",
-      "İlaç hedefleme"
-    ],
-    "specifications": {
-      "appearance": "Siyah manyetik toz",
-      "magneticProperties": "Süperparamanyetik",
-      "saturationMagnetization": "70-80 emu/g",
-      "packaging": "50g, 100g, 250g"
-    },
-    "images": [
-      "/images/products/iron-oxide.jpg"
-    ]
-  }
-]
+    {
+      "id": "NK-004",
+      "name": "Nadir Toprak Elementleri Seti",
+      "category": "Nadir Toprak Elementleri",
+      "description": "Neodimyum, Disprosiyum ve Terbiyum içeren araştırma ve geliştirme amaçlı numune seti.",
+      "price": 5000.00,
+      "currency": "TL",
+      "stock_status": "Sipariş Üzerine",
+      "keywords": ["neodimyum", "disprosiyum", "nadir toprak", "ree", "mıknatıs"],
+      "specs": {
+        "içerik": "Nd2O3, Dy2O3",
+        "form": "Oksit Tozu",
+        "ambalaj": "Vakum paket"
+      }
+    }
+  ]
+}
