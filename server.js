@@ -1,4 +1,4 @@
-// server.js - FİNAL SÜRÜM (Google Sheets + GitHub Ürün + Lead Fix)
+// server.js - FİNAL SÜRÜM (Mail Port Fix + Google Sheets + GitHub Ürün)
 
 const express = require('express');
 const cors = require('cors');
@@ -12,7 +12,7 @@ const { SpeechClient } = require('@google-cloud/speech');
 const { TextToSpeechClient } = require('@google-cloud/text-to-speech');
 const nodemailer = require('nodemailer');
 
-// YENİ: Google Sheets Kütüphaneleri
+// Google Sheets Kütüphaneleri
 const { GoogleSpreadsheet } = require('google-spreadsheet');
 const { JWT } = require('google-auth-library');
 
@@ -29,7 +29,6 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const upload = multer({ dest: 'uploads/' });
 
 // --- AYARLAR ---
-// Senin tablonun ID'si buraya eklendi:
 const SPREADSHEET_ID = "1M44lWMSXavUcIacCSfNb-o55aWmaayx5BpLXuiyBEKs";
 
 // --- GOOGLE CLOUD ANAHTAR YÖNETİMİ ---
@@ -103,7 +102,6 @@ async function saveToGoogleSheets(name, phone, message) {
     }
 
     try {
-        // Yetkilendirme (JWT)
         const serviceAccountAuth = new JWT({
             email: googleAuthJSON.client_email,
             key: googleAuthJSON.private_key,
@@ -111,12 +109,10 @@ async function saveToGoogleSheets(name, phone, message) {
         });
 
         const doc = new GoogleSpreadsheet(SPREADSHEET_ID, serviceAccountAuth);
-        await doc.loadInfo(); // Tabloyu yükle
+        await doc.loadInfo(); 
 
-        const sheet = doc.sheetsByIndex[0]; // İlk sayfayı al (Sayfa1)
+        const sheet = doc.sheetsByIndex[0];
         
-        // Satır ekle - Tablodaki başlıklarınla birebir aynı olmalı:
-        // Tarih | İsim | Telefon | Mesaj
         await sheet.addRow({
             'Tarih': new Date().toLocaleString('tr-TR'),
             'İsim': name,
@@ -130,13 +126,21 @@ async function saveToGoogleSheets(name, phone, message) {
     }
 }
 
-// --- MAİL VE LEAD ---
+// --- MAİL VE LEAD (GÜNCELLENDİ: PORT 465 SSL) ---
 async function sendLeadEmail(name, phone, message) {
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) return;
+    
+    // Render için güvenli mail ayarı (Fix)
     const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true, // SSL kullanımı
+        auth: { 
+            user: process.env.EMAIL_USER, 
+            pass: process.env.EMAIL_PASS 
+        }
     });
+
     try {
         await transporter.sendMail({
             from: 'Nanokar Bot',
@@ -144,11 +148,11 @@ async function sendLeadEmail(name, phone, message) {
             subject: '🔔 Yeni Müşteri Talebi (Web)',
             text: `İsim: ${name}\nTel: ${phone}\nMesaj: ${message}`
         });
-    } catch(e) {}
+        console.log("✅ Mail başarıyla gönderildi.");
+    } catch(e) { console.error("❌ Mail gönderme hatası:", e); }
 }
 
 async function checkAndSaveLead(text) {
-    // Telefon numarası yakalama regex'i
     if (text.match(/(\+90|0)?\s*5\d{2}/)) {
         try {
             const response = await openai.chat.completions.create({
@@ -161,11 +165,11 @@ async function checkAndSaveLead(text) {
             });
             const res = JSON.parse(response.choices[0].message.content);
             
-            // 1. Dosyaya Yaz (Yedek)
+            // 1. Dosyaya Yaz
             fs.appendFileSync(path.join(__dirname, 'leads', 'Musteri_Talepleri.txt'), 
                 `${new Date().toLocaleString()} | ${res.name} | ${res.phone}\n`);
             
-            // 2. Google Sheet'e Yaz (YENİ)
+            // 2. Google Sheet'e Yaz
             await saveToGoogleSheets(res.name, res.phone, text);
 
             // 3. Mail At
@@ -258,6 +262,9 @@ app.post('/api/voice-chat', upload.single('audio'), async (req, res) => {
         });
         res.json({ success: true, message: reply, audioBase64: tts.audioContent.toString('base64') });
     } catch (e) {
+        // Ses hatası olsa bile kullanıcıya metin olarak dönmek daha iyidir,
+        // ama şimdilik hata mesajı veriyoruz.
+        console.error("Sesli sohbet hatası (API aktif mi?):", e);
         res.status(500).json({ error: 'Ses hatası' });
     } finally {
         if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
