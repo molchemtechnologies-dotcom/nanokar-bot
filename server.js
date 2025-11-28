@@ -1,5 +1,5 @@
-// server.js - Nanokar AI Chatbot v2.0 (UZMAN MODU + FULL)
-// 937 urun, 3013 blog, bilgi bankasi, akilli oneri
+// server.js - Nanokar AI Chatbot v2.0 (UZMAN MODU + SES + SHEETS)
+// 937 urun, 3013 blog, bilgi bankasi, sesli chat, google sheets
 
 const express = require('express');
 const cors = require('cors');
@@ -9,11 +9,16 @@ const path = require('path');
 const dotenv = require('dotenv');
 const { OpenAI } = require('openai');
 const Fuse = require('fuse.js');
+const { SpeechClient } = require('@google-cloud/speech');
+const { TextToSpeechClient } = require('@google-cloud/text-to-speech');
+const nodemailer = require('nodemailer');
+const { GoogleSpreadsheet } = require('google-spreadsheet');
+const { JWT } = require('google-auth-library');
 
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 10000;
 
 app.use(cors());
 app.use(express.json());
@@ -24,6 +29,21 @@ app.use(express.static(__dirname));
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const upload = multer({ dest: 'uploads/' });
+
+// --- GOOGLE CLOUD AYARLARI ---
+if (process.env.GOOGLE_CREDENTIALS_JSON) {
+    fs.writeFileSync('nanokar-key.json', process.env.GOOGLE_CREDENTIALS_JSON);
+    process.env.GOOGLE_APPLICATION_CREDENTIALS = 'nanokar-key.json';
+}
+
+let speechClient, ttsClient;
+try {
+    speechClient = new SpeechClient();
+    ttsClient = new TextToSpeechClient();
+    console.log("[OK] Ses servisi baslatildi.");
+} catch (e) { 
+    console.log("[UYARI] Ses servisi hatasi:", e.message); 
+}
 
 // Klasorler
 if (!fs.existsSync('leads')) fs.mkdirSync('leads');
@@ -346,7 +366,77 @@ function addLinksToResponse(message, products) {
     return processedMessage;
 }
 
-// --- LEAD KONTROL ---
+// --- GOOGLE SHEETS ENTEGRASYONU ---
+async function getDoc() {
+    if (!process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || !process.env.GOOGLE_PRIVATE_KEY) {
+        console.warn("[UYARI] Google Sheets kimlik bilgileri eksik!");
+        return null;
+    }
+    const SHEET_ID = process.env.GOOGLE_SHEET_ID || '1YarK8GDuApZTQCRWekZYjN5jLrCDAveitle4LbxI7x8';
+    try {
+        const privateKey = process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n');
+        const auth = new JWT({
+            email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+            key: privateKey,
+            scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+        });
+        const doc = new GoogleSpreadsheet(SHEET_ID, auth);
+        await doc.loadInfo();
+        return doc;
+    } catch (e) {
+        console.error("[HATA] Google Auth: " + e.message);
+        return null;
+    }
+}
+
+async function saveToGoogleSheets(name, phone, message) {
+    const doc = await getDoc();
+    if (!doc) return;
+    
+    try {
+        let sheet = doc.sheetsByTitle['Nanokar Kayitli Musteri'];
+        if (!sheet) sheet = doc.sheetsByIndex[0];
+        if (!sheet) {
+            sheet = await doc.addSheet({ 
+                title: 'Nanokar Kayitli Musteri', 
+                headerValues: ['Tarih', 'Isim', 'Telefon', 'Mesaj'] 
+            });
+        }
+        await sheet.addRow({
+            'Tarih': new Date().toLocaleString('tr-TR'),
+            'Isim': name,
+            'Telefon': phone,
+            'Mesaj': message
+        });
+        console.log("[OK] Lead kaydedildi.");
+    } catch (e) { 
+        console.error("[HATA] Lead Kayit: " + e.message); 
+    }
+}
+
+async function saveChatToGoogleSheets(userMsg, botResp, ip) {
+    const doc = await getDoc();
+    if (!doc) return;
+
+    try {
+        let sheet = doc.sheetsByTitle['Sohbetler'];
+        if (!sheet) {
+            sheet = await doc.addSheet({ title: 'Sohbetler', headerValues: ['Tarih', 'Kullanici', 'Bot', 'IP'] });
+        }
+        const cleanBotResp = botResp.replace(/<[^>]*>/g, '');
+        await sheet.addRow({
+            'Tarih': new Date().toLocaleString('tr-TR'),
+            'Kullanici': userMsg.substring(0, 2000),
+            'Bot': cleanBotResp.substring(0, 2000),
+            'IP': ip
+        });
+        console.log("[OK] Sohbet kaydedildi.");
+    } catch (e) { 
+        console.error("[HATA] Sohbet Kayit: " + e.message); 
+    }
+}
+
+// --- LEAD KONTROL VE EMAIL ---
 async function checkAndSaveLead(text) {
     var phoneRegex = /(\+90|0)?\s*\d{3}\s*\d{3}\s*\d{2,4}\s*\d{2}?/;
     if (phoneRegex.test(text)) {
@@ -361,13 +451,8 @@ async function checkAndSaveLead(text) {
             });
             var res = JSON.parse(resp.choices[0].message.content);
             if (res.name && res.phone) {
-                var leadFile = path.join(__dirname, 'leads', Date.now() + '.json');
-                fs.writeFileSync(leadFile, JSON.stringify({
-                    tarih: new Date().toLocaleString('tr-TR'),
-                    isim: res.name,
-                    telefon: res.phone,
-                    mesaj: text
-                }, null, 2));
+                await saveToGoogleSheets(res.name, res.phone, text);
+                await sendLeadEmail(res.name, res.phone, text);
                 console.log("[OK] Lead kaydedildi: " + res.name);
                 return { saved: true, name: res.name };
             }
@@ -376,6 +461,25 @@ async function checkAndSaveLead(text) {
         }
     }
     return { saved: false };
+}
+
+async function sendLeadEmail(name, phone, message) {
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) return;
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
+    });
+    try {
+        await transporter.sendMail({
+            from: '"Nanokar Bot" <' + process.env.EMAIL_USER + '>',
+            to: 'info@nanokar.com',
+            subject: 'Yeni Musteri Talebi',
+            html: '<b>Isim:</b> ' + name + '<br><b>Tel:</b> ' + phone + '<br><b>Talep:</b> ' + message
+        });
+        console.log("[OK] Email gonderildi.");
+    } catch (e) { 
+        console.error("[HATA] Mail: " + e.message); 
+    }
 }
 
 // ==================== ENDPOINTS ====================
@@ -389,9 +493,11 @@ app.get('/', function(req, res) {
 app.get('/api/test', function(req, res) {
     res.json({
         status: 'OK',
+        version: '2.0',
         urun_sayisi: globalProductData.length,
         blog_sayisi: knowledgeBase.nanokar_bloglar ? knowledgeBase.nanokar_bloglar.length : 0,
-        anahtar_kelime: searchIndex.anahtar_kelimeler ? Object.keys(searchIndex.anahtar_kelimeler).length : 0
+        ses_servisi: speechClient ? 'AKTIF' : 'PASIF',
+        sheets: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL ? 'AKTIF' : 'PASIF'
     });
 });
 
@@ -419,7 +525,7 @@ app.get('/api/search', function(req, res) {
     });
 });
 
-// Ana chat endpoint
+// --- ANA CHAT ENDPOINT ---
 app.post('/api/chat', async function(req, res) {
     try {
         var messages = req.body.messages;
@@ -428,12 +534,14 @@ app.post('/api/chat', async function(req, res) {
         }
         
         var userMsg = messages[messages.length - 1].content;
+        var clientIp = req.ip || 'unknown';
         console.log("\n[KULLANICI] " + userMsg);
 
         // 1. Lead Kontrolu
         var lead = await checkAndSaveLead(userMsg);
         if (lead.saved) {
             var reply = "Tesekkurler " + lead.name + ", bilgilerinizi aldim. Teknik ekibimiz sizi en kisa surede arayacak.";
+            await saveChatToGoogleSheets(userMsg, reply, clientIp);
             return res.json({ success: true, message: reply });
         }
 
@@ -487,12 +595,96 @@ app.post('/api/chat', async function(req, res) {
             reply = addLinksToResponse(reply, foundProducts);
         }
 
+        // 6. Kaydet
+        await saveChatToGoogleSheets(userMsg, reply, clientIp);
+
         console.log("[BOT] " + reply.substring(0, 100) + "...");
         res.json({ success: true, message: reply });
 
     } catch (error) {
         console.error('[HATA] Chat Error:', error);
         res.status(500).json({ error: 'Sunucu hatasi' });
+    }
+});
+
+// --- SESLI CHAT ENDPOINT ---
+app.post('/api/voice-chat', upload.single('audio'), async function(req, res) {
+    if (!req.file) {
+        return res.status(400).json({ error: 'Ses dosyasi yok' });
+    }
+    
+    if (!speechClient || !ttsClient) {
+        return res.status(500).json({ error: 'Ses servisi aktif degil' });
+    }
+    
+    try {
+        // 1. Ses dosyasini oku
+        const audioBytes = fs.readFileSync(req.file.path);
+        
+        // 2. Speech-to-Text
+        const [sttResponse] = await speechClient.recognize({
+            config: { 
+                languageCode: 'tr-TR', 
+                encoding: 'WEBM_OPUS', 
+                sampleRateHertz: 48000 
+            },
+            audio: { content: audioBytes.toString('base64') }
+        });
+        
+        const transcript = sttResponse.results[0]?.alternatives[0]?.transcript || '';
+        console.log("[SES] Transcript: " + transcript);
+        
+        if (!transcript) {
+            fs.unlinkSync(req.file.path);
+            return res.json({ success: false, error: 'Ses anlasilamadi' });
+        }
+        
+        // 3. Urun ara
+        var results = smartSearch(transcript);
+        var context = results.length > 0 
+            ? 'Bulunan urunler: ' + results.map(function(p) { return p.name; }).join(', ')
+            : 'Urun bulunamadi.';
+        
+        // 4. AI cevap
+        const gptResponse = await openai.chat.completions.create({
+            model: 'gpt-4o-mini',
+            messages: [
+                { role: 'system', content: 'Sen Nanokar sesli asistanisin. Cok kisa (1-2 cumle) cevap ver. ' + context },
+                { role: 'user', content: transcript }
+            ],
+            max_tokens: 150
+        });
+        
+        const reply = gptResponse.choices[0].message.content;
+        console.log("[SES] Reply: " + reply);
+        
+        // 5. Text-to-Speech
+        const [ttsResponse] = await ttsClient.synthesizeSpeech({
+            input: { text: reply },
+            voice: { languageCode: 'tr-TR', name: 'tr-TR-Wavenet-E', ssmlGender: 'FEMALE' },
+            audioConfig: { audioEncoding: 'MP3' }
+        });
+        
+        // 6. Kaydet
+        await saveChatToGoogleSheets(transcript, reply, 'voice');
+        
+        // 7. Temizle
+        fs.unlinkSync(req.file.path);
+        
+        // 8. Cevap
+        res.json({ 
+            success: true, 
+            transcript: transcript, 
+            message: reply, 
+            audioBase64: ttsResponse.audioContent.toString('base64') 
+        });
+        
+    } catch (error) {
+        console.error('[HATA] Ses hatasi:', error.message);
+        if (req.file && fs.existsSync(req.file.path)) {
+            fs.unlinkSync(req.file.path);
+        }
+        res.status(500).json({ error: 'Ses isleme hatasi: ' + error.message });
     }
 });
 
@@ -504,6 +696,8 @@ app.listen(port, function() {
     console.log("  Adres: http://localhost:" + port);
     console.log("  Urunler: " + globalProductData.length);
     console.log("  Bloglar: " + (knowledgeBase.nanokar_bloglar ? knowledgeBase.nanokar_bloglar.length : 0));
+    console.log("  Ses: " + (speechClient ? "AKTIF" : "PASIF"));
+    console.log("  Sheets: " + (process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL ? "AKTIF" : "PASIF"));
     console.log("  Test: http://localhost:" + port + "/api/test");
     console.log("===========================================\n");
 });
