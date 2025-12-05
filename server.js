@@ -1,5 +1,5 @@
-// server.js - Nanokar AI Chatbot v2.1 (FILE SYSTEM PROMPT + SALES LOGIC)
-// 937 urun, 3013 blog, bilgi bankasi, sesli chat, google sheets
+// server.js - Nanokar AI Chatbot v2.2 (MULTI-LANGUAGE + SALES LOGIC + FILE SYSTEM)
+// Özellikler: Türkçe-İngilizce çapraz arama, Satış Stratejisi, Dosya Tabanlı Prompt
 
 const express = require('express');
 const cors = require('cors');
@@ -50,9 +50,6 @@ if (!fs.existsSync('leads')) fs.mkdirSync('leads');
 if (!fs.existsSync('uploads')) fs.mkdirSync('uploads');
 
 // --- DİNAMİK SYSTEM PROMPT YÖNETİMİ ---
-// Prompt artik kodun icinde degil, system_prompt.txt dosyasindan okunuyor.
-// Boylece sunucuyu yeniden baslatmadan prompt guncelleyebilirsin.
-
 let SYSTEM_PROMPT = "";
 
 function loadSystemPrompt() {
@@ -66,29 +63,30 @@ function loadSystemPrompt() {
         }
     } catch (err) {
         console.warn("[UYARI] Prompt dosyasi okunamadi, YEDEK PROMPT devreye girdi.");
-        // YEDEK PROMPT (Dosya silinirse bu calisir - Yeni Satis Mantigi Eklendi)
+        // YEDEK PROMPT (Dosya silinirse bu calisir - Güvenlik ve Satış Mantığı Dahil)
         SYSTEM_PROMPT = `Sen Nanokar İleri Teknoloji Malzemeleri'nin BAŞ AR-GE MÜHENDİSİ ve TEKNİK DANIŞMANISIN (Nano-Genius).
 
 ### KİMLİK VE YETKİ ###
 - 15+ yıl nanoteknoloji ve malzeme bilimi deneyimi.
-- Görevin: Sadece ürün satmak değil, müşterinin projesini (X Değişkeni) anlayıp en doğru ve GÜVENLİ mühendislik çözümünü sunmak.
+- Görevin: Sadece ürün satmak değil, müşterinin projesini anlamak ve en doğru mühendislik çözümünü sunmak.
 
-### DÜŞÜNME ALGORİTMASI ($P + X) ###
-1. **ÖNCE ANALİZ ET:** Müşteri bir ürün sorduğunda hemen fiyat verme. Niyetini anla.
-2. **NEDEN-SONUÇ İLİŞKİSİ KUR:** Özellik değil, fayda sat.
+### ⚠️ KRİTİK GÜVENLİK PROTOKOLÜ ⚠️ ###
+Müşteri bir "Matris" (Epoksi, Boya, Plastik) ve bir "Sıcaklık" değeri verirse:
+1. **Zayıf Halka Analizi:** Katkı maddesi dayansa bile, Ana Malzeme (Örn: Epoksi) kaç derecede bozulur?
+2. **KURAL:** Müşteri matrisin limitini aşan bir sıcaklık söylerse (Örn: "Epoksi ile 600°C"), SERTÇE UYAR.
+3. **BİLGİ:** Epoksiler ~200-300°C'de yanar.
 
-### ⚠️ EĞER ARANAN ÜRÜN STOKTA YOKSA (KRİTİK STRATEJİ) ⚠️ ###
-Kullanıcı karmaşık bir bileşik (Örn: LFP, NMC, YBCO) sorduğunda ve veritabanında bu *hazır ürün* yoksa, sakın "YOK" deyip konuyu kapatma.
-1. **Kimyasal Analiz Yap:** İstenen malzemenin kimyasal bileşenleri nedir? (Örn: LFP -> Demir Oksit, Lityum).
-2. **Stok Kontrolü:** Stoklarında bu bileşenlerin "Metal Oksit" veya "Nano Toz" halleri var mı?
-3. **Mühendislik Önerisi:** "Hazır LFP tozumuz yok ANCAK LFP sentezi yapabileceğiniz yüksek saflıkta Nano Demir Oksit stoklarımızda mevcuttur" de.
+### TİCARİ STRATEJİ: ÜRÜN STOKTA YOKSA (HAMMADDE ÖNER) ###
+Kullanıcı karmaşık bir bileşik (Örn: LFP, NMC, YBCO, Boya) sorduğunda ve hazır ürün yoksa:
+1. **Kimyasal Ayrıştırma:** İstenen malzemenin bileşenleri nedir?
+2. **Stok Eşleştirmesi:** Stoklarında bu bileşenlerin "Metal Oksit" veya "Nano Toz" halleri var mı?
+3. **Mühendislik Teklifi:** "Hazır LFP tozumuz yok ANCAK LFP sentezi yapabileceğiniz yüksek saflıkta Nano Demir Oksit stoklarımızda mevcuttur" de.
 
 ### CEVAP FORMATI ###
-- **Analiz:** İhtiyacı özetle.
-- **Teknik Çözüm:** Doğru ürün veya alternatif hammadde önerisi.
-- **Sipariş Çağrısı:** Stok ve iletişim.
-
-SEN SADECE BİR BOT DEĞİL, BİR MÜHENDİSLİK OTORİTESİSİN.`;
+1. **Analiz:** İhtiyacı ve varsa riskleri özetle.
+2. **Teknik Çözüm:** Doğru ürün veya alternatif hammadde.
+3. **Uygulama İpucu:** Teknik detay.
+4. **Sipariş Çağrısı:** Stok ve iletişim.`;
     }
 }
 
@@ -157,19 +155,18 @@ loadProducts();
 loadKnowledgeBase();
 loadSearchIndex();
 
-// --- FUSE ARAMA ---
+// --- FUSE ARAMA AYARLARI ---
 function createFuseIndex() {
     return new Fuse(globalProductData, {
         keys: [
             { name: 'search_keywords', weight: 5.0 },
-            { name: 'applications', weight: 4.0 },
-            { name: 'project_types', weight: 3.5 },
-            { name: 'name', weight: 3.0 },
+            { name: 'name', weight: 4.0 }, // Isim agirligini artirdik
+            { name: 'applications', weight: 3.5 },
+            { name: 'project_types', weight: 3.0 },
             { name: 'technical_notes', weight: 2.0 },
-            { name: 'benefits', weight: 1.5 },
             { name: 'category', weight: 1.0 }
         ],
-        threshold: 0.35,
+        threshold: 0.35, // Eslesme hassasiyeti
         ignoreLocation: true,
         minMatchCharLength: 2,
         includeScore: true
@@ -177,51 +174,78 @@ function createFuseIndex() {
 }
 let fuse = createFuseIndex();
 
-// --- AKILLI ANAHTAR KELIME ESLESTIRME ---
+// --- TR-EN SÖZLÜK VE KEYWORDS ---
+const ELEMENT_DICTIONARY = {
+    "gümüş": "silver", "gumus": "silver",
+    "altın": "gold", "altin": "gold",
+    "bakır": "copper", "bakir": "copper",
+    "demir": "iron",
+    "çinko": "zinc", "cinko": "zinc",
+    "kurşun": "lead", "kursun": "lead",
+    "kalay": "tin",
+    "nikel": "nickel",
+    "alüminyum": "aluminium", "aluminum": "aluminum",
+    "titanyum": "titanium", "titan": "titanium",
+    "karbon": "carbon",
+    "silisyum": "silicon",
+    "bor": "boron",
+    "kükürt": "sulfur",
+    "oksit": "oxide",
+    "karbür": "carbide",
+    "nitrür": "nitride",
+    "sülfür": "sulfide",
+    "nanotüp": "nanotube", "nanotup": "nanotube"
+};
+
 const UYGULAMA_KEYWORDS = {
     "gunes kremi": ["cinko oksit", "zno", "titanyum dioksit", "tio2", "uv"],
     "sunscreen": ["zinc oxide", "zno", "titanium dioxide", "tio2", "uv"],
-    "radar": ["demir oksit", "fe3o4", "ferrit", "manyetik", "karbon nanotup"],
+    "radar": ["demir oksit", "fe3o4", "ferrit", "manyetik", "karbon nanotup", "ram"],
     "stealth": ["fe3o4", "ferrite", "magnetic", "carbon nanotube", "ram"],
     "antibakteriyel": ["gumus", "nano silver", "bakir", "cinko oksit"],
     "antibacterial": ["silver", "copper", "zinc oxide"],
     "batarya": ["lityum", "grafit", "silisyum", "katot", "anot"],
-    "battery": ["lithium", "graphite", "silicon", "cathode", "anode"],
-    "iletken": ["gumus", "karbon nanotup", "grafen", "bakir"],
-    "conductive": ["silver", "carbon nanotube", "graphene", "copper"],
-    "kaplama": ["oksit", "karbur", "nitrit", "koruma"],
-    "coating": ["oxide", "carbide", "nitride", "protection"],
-    "3d baski": ["toz", "metal", "polimer", "paslanmaz"],
-    "3d print": ["powder", "metal", "polymer", "stainless"],
-    "dis macunu": ["hidroksiapatit", "silika", "kalsiyum", "florit"],
-    "toothpaste": ["hydroxyapatite", "silica", "calcium", "fluoride"]
+    "battery": ["lithium", "graphite", "silicon", "cathode", "anode"]
 };
 
 // --- METIN TEMIZLEME ---
 function cleanQuery(text) {
     const stopWords = ["var", "mi", "mu", "yok", "fiyat", "nedir", "kac", 
                        "stokta", "elinizde", "istiyorum", "alabilir", "miyim", "icin", 
-                       "bir", "sey", "malzeme", "lazim", "nanokar", "bana", "oner", 
-                       "hakkinda", "bilgi", "the", "is", "are", "for", "and", "or"];
+                       "bir", "sey", "malzeme", "lazim", "nanokar", "bana", "oner"];
     
     return text.toLowerCase()
-        .replace(/[^\w\s]/gi, '')
+        .replace(/[^\w\s]/gi, '') // Ozel karakterleri sil
         .split(/\s+/)
         .filter(function(w) { return w.length > 2 && stopWords.indexOf(w) === -1; })
         .join(" ");
 }
 
-// --- GELISMIS URUN ARAMA ---
+// --- GELISMIS AKILLI ARAMA (DİL DESTEKLİ) ---
 function smartSearch(query) {
-    const cleanedQuery = cleanQuery(query);
-    const queryLower = query.toLowerCase();
-    console.log("[ARAMA] " + cleanedQuery);
+    // 1. Sorguyu Temizle
+    let cleanedQuery = cleanQuery(query);
+    let queryLower = query.toLowerCase();
+    
+    // 2. ÇEVİRİ KATMANI: Türkçe kelime varsa İngilizcesini de sorguya ekle
+    // Örn: "Nano Gümüş" -> "Nano Gümüş Silver" olur.
+    for (let trKey in ELEMENT_DICTIONARY) {
+        if (queryLower.includes(trKey)) {
+            const enTerm = ELEMENT_DICTIONARY[trKey];
+            // Sadece kelime sorguda yoksa ekle (Tekrarı önle)
+            if (!cleanedQuery.includes(enTerm)) {
+                cleanedQuery += " " + enTerm;
+            }
+        }
+    }
+
+    console.log("[ARAMA - DIL DESTEKLI] " + cleanedQuery);
     
     if (!cleanedQuery) return [];
     
     var results = [];
     
-    // 1. Uygulama anahtar kelime eslestirmesi
+    // 3. Uygulama anahtar kelime eslestirmesi
     for (var uygulama in UYGULAMA_KEYWORDS) {
         if (queryLower.indexOf(uygulama) !== -1) {
             var keywords = UYGULAMA_KEYWORDS[uygulama];
@@ -230,11 +254,7 @@ function smartSearch(query) {
                 var productText = JSON.stringify(product).toLowerCase();
                 for (var j = 0; j < keywords.length; j++) {
                     if (productText.indexOf(keywords[j]) !== -1) {
-                        var found = false;
-                        for (var k = 0; k < results.length; k++) {
-                            if (results[k].name === product.name) found = true;
-                        }
-                        if (!found) results.push(product);
+                        if (!results.find(r => r.name === product.name)) results.push(product);
                         break;
                     }
                 }
@@ -242,23 +262,28 @@ function smartSearch(query) {
         }
     }
     
-    // 2. Fuse ile fuzzy arama
+    // 4. Fuse ile fuzzy arama (Artık "Silver" kelimesini de arıyor)
     var fuseResults = fuse.search(cleanedQuery);
     for (var i = 0; i < fuseResults.length; i++) {
         var item = fuseResults[i].item;
-        var found = false;
-        for (var k = 0; k < results.length; k++) {
-            if (results[k].name === item.name) found = true;
-        }
-        if (!found) results.push(item);
+        if (!results.find(r => r.name === item.name)) results.push(item);
     }
     
-    // 3. Dogrudan isim eslesmesi
+    // 5. Basit Text Araması (Yedek)
+    // Eğer Fuse bulamazsa, kelimeleri tek tek kontrol et
     for (var i = 0; i < globalProductData.length; i++) {
         var product = globalProductData[i];
-        if (product.name && product.name.toLowerCase().indexOf(cleanedQuery) !== -1) {
-            results = results.filter(function(r) { return r.name !== product.name; });
-            results.unshift(product);
+        if (product.name) {
+            let pName = product.name.toLowerCase();
+            let searchTerms = cleanedQuery.split(' ');
+            
+            for(let term of searchTerms) {
+                if(term.length > 3 && pName.includes(term)) {
+                    if (!results.find(r => r.name === product.name)) {
+                        results.push(product);
+                    }
+                }
+            }
         }
     }
     
@@ -307,11 +332,12 @@ function searchKnowledgeBase(query) {
     return null;
 }
 
-// --- AI SEMANTIK ARAMA ---
+// --- AI SEMANTIK ONERI ---
 async function aiProductRecommendation(userQuery) {
     try {
         console.log("[AI] Semantik Analiz: " + userQuery);
         
+        // Sadece ilk 200 urunu ozet olarak gonder (Token limiti icin)
         var productSummary = globalProductData.slice(0, 200).map(function(p) {
             return {
                 name: p.name,
@@ -347,7 +373,7 @@ async function aiProductRecommendation(userQuery) {
     }
 }
 
-// --- CEVAP FORMATLAMA ---
+// --- FORMATLAMA FONKSIYONLARI ---
 function formatProductListForAI(products) {
     if (products.length === 0) return "Eslesen urun bulunamadi.";
     
@@ -372,6 +398,7 @@ function addLinksToResponse(message, products) {
     }
     
     uniqueNames.slice(0, 5).forEach(function(name) {
+        // Basit linkleme: URL encode ederek arama sayfasina yonlendir
         var link = "https://www.nanokar.com.tr/kategori?ara=" + encodeURIComponent(name);
         var linkHtml = '<a href="' + link + '" target="_blank" style="color:#0066cc;font-weight:bold;">' + name + '</a>';
         var regex = new RegExp(name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
@@ -381,7 +408,7 @@ function addLinksToResponse(message, products) {
     return processedMessage;
 }
 
-// --- GOOGLE SHEETS ENTEGRASYONU ---
+// --- GOOGLE SHEETS & LEAD ---
 async function getDoc() {
     if (!process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || !process.env.GOOGLE_PRIVATE_KEY) {
         console.warn("[UYARI] Google Sheets kimlik bilgileri eksik!");
@@ -412,10 +439,7 @@ async function saveToGoogleSheets(name, phone, message) {
         let sheet = doc.sheetsByTitle['Nanokar Kayitli Musteri'];
         if (!sheet) sheet = doc.sheetsByIndex[0];
         if (!sheet) {
-            sheet = await doc.addSheet({ 
-                title: 'Nanokar Kayitli Musteri', 
-                headerValues: ['Tarih', 'Isim', 'Telefon', 'Mesaj'] 
-            });
+            sheet = await doc.addSheet({ title: 'Nanokar Kayitli Musteri', headerValues: ['Tarih', 'Isim', 'Telefon', 'Mesaj'] });
         }
         await sheet.addRow({
             'Tarih': new Date().toLocaleString('tr-TR'),
@@ -424,9 +448,7 @@ async function saveToGoogleSheets(name, phone, message) {
             'Mesaj': message
         });
         console.log("[OK] Lead kaydedildi.");
-    } catch (e) { 
-        console.error("[HATA] Lead Kayit: " + e.message); 
-    }
+    } catch (e) { console.error("[HATA] Lead Kayit: " + e.message); }
 }
 
 async function saveChatToGoogleSheets(userMsg, botResp, ip) {
@@ -446,12 +468,9 @@ async function saveChatToGoogleSheets(userMsg, botResp, ip) {
             'IP': ip
         });
         console.log("[OK] Sohbet kaydedildi.");
-    } catch (e) { 
-        console.error("[HATA] Sohbet Kayit: " + e.message); 
-    }
+    } catch (e) { console.error("[HATA] Sohbet Kayit: " + e.message); }
 }
 
-// --- LEAD KONTROL VE EMAIL ---
 async function checkAndSaveLead(text) {
     var phoneRegex = /(\+90|0)?\s*\d{3}\s*\d{3}\s*\d{2,4}\s*\d{2}?/;
     if (phoneRegex.test(text)) {
@@ -468,12 +487,9 @@ async function checkAndSaveLead(text) {
             if (res.name && res.phone) {
                 await saveToGoogleSheets(res.name, res.phone, text);
                 await sendLeadEmail(res.name, res.phone, text);
-                console.log("[OK] Lead kaydedildi: " + res.name);
                 return { saved: true, name: res.name };
             }
-        } catch (e) { 
-            console.error("[HATA] Lead hatasi: " + e.message); 
-        }
+        } catch (e) { console.error("[HATA] Lead hatasi: " + e.message); }
     }
     return { saved: false };
 }
@@ -492,43 +508,23 @@ async function sendLeadEmail(name, phone, message) {
             html: '<b>Isim:</b> ' + name + '<br><b>Tel:</b> ' + phone + '<br><b>Talep:</b> ' + message
         });
         console.log("[OK] Email gonderildi.");
-    } catch (e) { 
-        console.error("[HATA] Mail: " + e.message); 
-    }
+    } catch (e) { console.error("[HATA] Mail: " + e.message); }
 }
 
 // ==================== ENDPOINTS ====================
 
-// Ana sayfa
-app.get('/', function(req, res) {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
+app.get('/', function(req, res) { res.sendFile(path.join(__dirname, 'index.html')); });
 
-// Test endpoint
 app.get('/api/test', function(req, res) {
     res.json({
         status: 'OK',
-        version: '2.1',
-        prompt_source: fs.existsSync('system_prompt.txt') ? 'FILE (system_prompt.txt)' : 'HARDCODED FALLBACK',
+        version: '2.2',
+        prompt_mode: fs.existsSync('system_prompt.txt') ? 'FILE (system_prompt.txt)' : 'BACKUP',
         urun_sayisi: globalProductData.length,
-        blog_sayisi: knowledgeBase.nanokar_bloglar ? knowledgeBase.nanokar_bloglar.length : 0,
-        ses_servisi: speechClient ? 'AKTIF' : 'PASIF',
-        sheets: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL ? 'AKTIF' : 'PASIF'
+        ses: speechClient ? 'AKTIF' : 'PASIF'
     });
 });
 
-// Urun listesi
-app.get('/api/products', function(req, res) {
-    res.json({
-        success: true,
-        count: globalProductData.length,
-        products: globalProductData.slice(0, 50).map(function(p) {
-            return { name: p.name, category: p.category };
-        })
-    });
-});
-
-// Arama endpoint
 app.get('/api/search', function(req, res) {
     var query = req.query.q || '';
     var results = smartSearch(query);
@@ -541,26 +537,22 @@ app.get('/api/search', function(req, res) {
     });
 });
 
-// --- ANA CHAT ENDPOINT ---
 app.post('/api/chat', async function(req, res) {
     try {
         var messages = req.body.messages;
-        if (!messages || messages.length === 0) {
-            return res.status(400).json({ error: 'Mesaj yok' });
-        }
+        if (!messages || messages.length === 0) return res.status(400).json({ error: 'Mesaj yok' });
         
         var userMsg = messages[messages.length - 1].content;
         var clientIp = req.ip || 'unknown';
         console.log("\n[KULLANICI] " + userMsg);
         
-        // Her chat isteginde prompt dosyasini yeniden oku (Development sirasinda kolaylik)
-        // Production icin bu satiri kapatabilirsin
+        // Development sirasinda her istekte promptu guncelle
         loadSystemPrompt();
 
-        // 1. Lead Kontrolu
+        // 1. Lead Kayit
         var lead = await checkAndSaveLead(userMsg);
         if (lead.saved) {
-            var reply = "Tesekkurler " + lead.name + ", bilgilerinizi aldim. Teknik ekibimiz sizi en kisa surede arayacak.";
+            var reply = "Tesekkurler " + lead.name + ", bilgilerinizi aldim. Teknik ekibimiz sizi arayacak.";
             await saveChatToGoogleSheets(userMsg, reply, clientIp);
             return res.json({ success: true, message: reply });
         }
@@ -569,14 +561,11 @@ app.post('/api/chat', async function(req, res) {
         var kbInfo = searchKnowledgeBase(userMsg);
         var kbContext = "";
         if (kbInfo) {
-            if (kbInfo.type === 'sss') {
-                kbContext = "\n\nBILGI BANKASI (SSS):\n" + kbInfo.cevap + "\nOnerilen urunler: " + kbInfo.urunler.join(', ');
-            } else if (kbInfo.type === 'blog') {
-                kbContext = "\n\nILGILI BLOGLAR:\n" + kbInfo.blogs.map(function(b) { return "- " + b.baslik; }).join('\n');
-            }
+            if (kbInfo.type === 'sss') kbContext = "\n\nBILGI BANKASI:\n" + kbInfo.cevap;
+            else if (kbInfo.type === 'blog') kbContext = "\n\nBLOGLAR:\n" + kbInfo.blogs.map(b => "- " + b.baslik).join('\n');
         }
 
-        // 3. Urun Arama
+        // 3. Urun Arama (Dil Destekli)
         var searchResults = smartSearch(userMsg);
         var aiContext = "";
         var foundProducts = [];
@@ -586,18 +575,12 @@ app.post('/api/chat', async function(req, res) {
             aiContext = "\n\nBULUNAN URUNLER:\n" + formatProductListForAI(searchResults);
             console.log("[OK] " + searchResults.length + " urun bulundu");
         } else {
-            var aiRec = await aiProductRecommendation(userMsg);
-            if (aiRec.found) {
-                foundProducts = aiRec.products;
-                aiContext = "\n\nAI ONERILEN URUNLER:\n" + formatProductListForAI(aiRec.products);
-                console.log("[AI] " + aiRec.products.length + " urun onerdi");
-            } else {
-                aiContext = "\n\nUrun bulunamadi. Ancak alternatif hammadde onermelisin.";
-                console.log("[UYARI] Urun bulunamadi - Alternatif onerme modu");
-            }
+            // Urun yoksa AI'ya 'Alternatif Oner' sinyali gonder
+            aiContext = "\n\nSTOKTA URUN BULUNAMADI. 'HAMMADDE ONERME' STRATEJISINI UYGULA.";
+            console.log("[UYARI] Urun bulunamadi - Alternatif mod");
         }
 
-        // 4. AI Yaniti
+        // 4. AI Cevap
         var gptResponse = await openai.chat.completions.create({
             model: 'gpt-4o-mini',
             messages: [
@@ -610,15 +593,13 @@ app.post('/api/chat', async function(req, res) {
 
         var reply = gptResponse.choices[0].message.content;
 
-        // 5. Link ekle
-        if (foundProducts.length > 0) {
-            reply = addLinksToResponse(reply, foundProducts);
-        }
+        // 5. Linkleme
+        if (foundProducts.length > 0) reply = addLinksToResponse(reply, foundProducts);
 
-        // 6. Kaydet
+        // 6. Kayit
         await saveChatToGoogleSheets(userMsg, reply, clientIp);
-
         console.log("[BOT] " + reply.substring(0, 100) + "...");
+        
         res.json({ success: true, message: reply });
 
     } catch (error) {
@@ -627,96 +608,51 @@ app.post('/api/chat', async function(req, res) {
     }
 });
 
-// --- SESLI CHAT ENDPOINT ---
+// Sesli Chat (Google Cloud)
 app.post('/api/voice-chat', upload.single('audio'), async function(req, res) {
-    if (!req.file) {
-        return res.status(400).json({ error: 'Ses dosyasi yok' });
-    }
-    
-    if (!speechClient || !ttsClient) {
-        return res.status(500).json({ error: 'Ses servisi aktif degil' });
-    }
-    
+    if (!req.file || !speechClient) return res.status(400).json({ error: 'Ses servisi hatali' });
     try {
-        // 1. Ses dosyasini oku
         const audioBytes = fs.readFileSync(req.file.path);
-        
-        // 2. Speech-to-Text
         const [sttResponse] = await speechClient.recognize({
-            config: { 
-                languageCode: 'tr-TR', 
-                encoding: 'WEBM_OPUS', 
-                sampleRateHertz: 48000 
-            },
+            config: { languageCode: 'tr-TR', encoding: 'WEBM_OPUS', sampleRateHertz: 48000 },
             audio: { content: audioBytes.toString('base64') }
         });
-        
         const transcript = sttResponse.results[0]?.alternatives[0]?.transcript || '';
-        console.log("[SES] Transcript: " + transcript);
         
-        if (!transcript) {
-            fs.unlinkSync(req.file.path);
-            return res.json({ success: false, error: 'Ses anlasilamadi' });
-        }
-        
-        // 3. Urun ara
+        if (!transcript) throw new Error("Ses anlasilmadi");
+
+        // Basit arama ve cevap
         var results = smartSearch(transcript);
-        var context = results.length > 0 
-            ? 'Bulunan urunler: ' + results.map(function(p) { return p.name; }).join(', ')
-            : 'Urun bulunamadi.';
+        var context = results.length > 0 ? 'Urunler: ' + results.map(p => p.name).join(', ') : 'Urun yok.';
         
-        // 4. AI cevap
         const gptResponse = await openai.chat.completions.create({
             model: 'gpt-4o-mini',
-            messages: [
-                { role: 'system', content: 'Sen Nanokar sesli asistanisin. Cok kisa (1-2 cumle) cevap ver. ' + context },
-                { role: 'user', content: transcript }
-            ],
-            max_tokens: 150
+            messages: [{ role: 'system', content: 'Kisa cevap ver. ' + context }, { role: 'user', content: transcript }]
         });
-        
         const reply = gptResponse.choices[0].message.content;
-        console.log("[SES] Reply: " + reply);
-        
-        // 5. Text-to-Speech
+
         const [ttsResponse] = await ttsClient.synthesizeSpeech({
             input: { text: reply },
             voice: { languageCode: 'tr-TR', name: 'tr-TR-Wavenet-E', ssmlGender: 'FEMALE' },
             audioConfig: { audioEncoding: 'MP3' }
         });
-        
-        // 6. Kaydet
-        await saveChatToGoogleSheets(transcript, reply, 'voice');
-        
-        // 7. Temizle
+
         fs.unlinkSync(req.file.path);
-        
-        // 8. Cevap
-        res.json({ 
-            success: true, 
-            transcript: transcript, 
-            message: reply, 
-            audioBase64: ttsResponse.audioContent.toString('base64') 
-        });
-        
+        res.json({ success: true, transcript, message: reply, audioBase64: ttsResponse.audioContent.toString('base64') });
+
     } catch (error) {
-        console.error('[HATA] Ses hatasi:', error.message);
-        if (req.file && fs.existsSync(req.file.path)) {
-            fs.unlinkSync(req.file.path);
-        }
-        res.status(500).json({ error: 'Ses isleme hatasi: ' + error.message });
+        if(req.file) fs.unlinkSync(req.file.path);
+        res.status(500).json({ error: error.message });
     }
 });
 
-// ==================== SERVER BASLAT ====================
 app.listen(port, function() {
     console.log("\n===========================================");
-    console.log("  NANOKAR AI BOT v2.1 (SALES LOGIC ENABLED)");
+    console.log("  NANOKAR AI BOT v2.2 (FULL SYSTEM)");
     console.log("===========================================");
-    console.log("  Adres: http://localhost:" + port);
+    console.log("  Port: " + port);
     console.log("  Urunler: " + globalProductData.length);
-    console.log("  Prompt Kaynagi: " + (fs.existsSync('system_prompt.txt') ? "SYSTEM_PROMPT.TXT (HARICI DOSYA)" : "GOMULU (BACKUP)"));
-    console.log("  Ses: " + (speechClient ? "AKTIF" : "PASIF"));
-    console.log("  Sheets: " + (process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL ? "AKTIF" : "PASIF"));
+    console.log("  Dil Destegi: AKTIF (TR -> EN)");
+    console.log("  Prompt: " + (fs.existsSync('system_prompt.txt') ? "DOSYA" : "BACKUP"));
     console.log("===========================================\n");
 });
