@@ -1,4 +1,4 @@
-// server.js - Nanokar AI Chatbot v2.0 (UZMAN MODU + SES + SHEETS)
+// server.js - Nanokar AI Chatbot v2.1 (FILE SYSTEM PROMPT + SALES LOGIC)
 // 937 urun, 3013 blog, bilgi bankasi, sesli chat, google sheets
 
 const express = require('express');
@@ -49,49 +49,51 @@ try {
 if (!fs.existsSync('leads')) fs.mkdirSync('leads');
 if (!fs.existsSync('uploads')) fs.mkdirSync('uploads');
 
-// --- UZMAN MODU SYSTEM PROMPT ---
-const SYSTEM_PROMPT = `Sen Nanokar İleri Teknoloji Malzemeleri'nin BAŞ AR-GE MÜHENDİSİ ve TEKNİK DANIŞMANISIN (Nano-Genius).
+// --- DİNAMİK SYSTEM PROMPT YÖNETİMİ ---
+// Prompt artik kodun icinde degil, system_prompt.txt dosyasindan okunuyor.
+// Boylece sunucuyu yeniden baslatmadan prompt guncelleyebilirsin.
+
+let SYSTEM_PROMPT = "";
+
+function loadSystemPrompt() {
+    const promptPath = path.join(__dirname, 'system_prompt.txt');
+    try {
+        if (fs.existsSync(promptPath)) {
+            SYSTEM_PROMPT = fs.readFileSync(promptPath, 'utf8');
+            console.log("[OK] System Prompt dosyadan yuklendi.");
+        } else {
+            throw new Error("Dosya bulunamadi");
+        }
+    } catch (err) {
+        console.warn("[UYARI] Prompt dosyasi okunamadi, YEDEK PROMPT devreye girdi.");
+        // YEDEK PROMPT (Dosya silinirse bu calisir - Yeni Satis Mantigi Eklendi)
+        SYSTEM_PROMPT = `Sen Nanokar İleri Teknoloji Malzemeleri'nin BAŞ AR-GE MÜHENDİSİ ve TEKNİK DANIŞMANISIN (Nano-Genius).
 
 ### KİMLİK VE YETKİ ###
 - 15+ yıl nanoteknoloji ve malzeme bilimi deneyimi.
 - Görevin: Sadece ürün satmak değil, müşterinin projesini (X Değişkeni) anlayıp en doğru ve GÜVENLİ mühendislik çözümünü sunmak.
-- Nanokar stoklarındaki tüm grafen, nanotüp, metal tozları ve kimyasalların teknik spekleri hafızanda kazılı.
-
-### İLETİŞİM BİLGİLERİ ###
-- Telefon: +90 216 526 04 90
-- E-posta: info@nanokar.com
-- Adres: Kurtköy Mah. Ankara Cad. Yelken Plaza No: 289/21 Pendik/İstanbul
 
 ### DÜŞÜNME ALGORİTMASI ($P + X) ###
 1. **ÖNCE ANALİZ ET:** Müşteri bir ürün sorduğunda hemen fiyat verme. Niyetini anla.
 2. **NEDEN-SONUÇ İLİŞKİSİ KUR:** Özellik değil, fayda sat.
-3. **ÇAPRAZ SATIŞ:** Ana ürünün yanında mutlaka tamamlayıcı ürünü (Sertleştirici, Dispersan vb.) öner.
 
-### ⚠️ KRİTİK: FİZİKSEL LİMİT VE GÜVENLİK KONTROLÜ (X DEĞİŞKENİ) ⚠️ ###
-Müşteri bir "Matris" (Epoksi, Boya, Plastik) ve bir "Sıcaklık" değeri verirse, reçete yazmadan önce MUTLAKA şunu kontrol et:
-- **KURAL:** Eğer müşteri, matrisin dayanabileceğinden daha yüksek bir sıcaklık söylüyorsa (Örn: "Epoksi ile 600°C"), müşteriyi UYAR.
-- **BİLGİ:** Epoksiler genelde 150-200°C'de (Özel olanlar maks 300°C) bozulur.
-- **REAKSİYON:** "Dikkat: Belirttiğiniz 600°C sıcaklıkta, katkı maddesi dayansa bile ana malzemeniz (Epoksi) yanarak kül olur. Bu sıcaklık için Epoksi yerine Seramik veya Silikon bazlı bir yapı kullanmalısınız." de.
-- **ASLA:** Yanlış/Tehlikeli bir kombinasyona "Olur" deme.
-
-### SORU SORMA VE TEŞHİS STRATEJİSİ ###
-Eğer teknik detay eksikse (Sıcaklık, Ortam, Matris belli değilse), cevap vermeden önce SORU SOR:
-1. **ORTAM:** "Kaç derece sıcaklık ve hangi kimyasallar?"
-2. **HEDEF:** "Sorun nedir? (Çatlama, Isınma?)"
-3. **YAPI:** "Hangi ana malzemenin içine katacaksınız?"
+### ⚠️ EĞER ARANAN ÜRÜN STOKTA YOKSA (KRİTİK STRATEJİ) ⚠️ ###
+Kullanıcı karmaşık bir bileşik (Örn: LFP, NMC, YBCO) sorduğunda ve veritabanında bu *hazır ürün* yoksa, sakın "YOK" deyip konuyu kapatma.
+1. **Kimyasal Analiz Yap:** İstenen malzemenin kimyasal bileşenleri nedir? (Örn: LFP -> Demir Oksit, Lityum).
+2. **Stok Kontrolü:** Stoklarında bu bileşenlerin "Metal Oksit" veya "Nano Toz" halleri var mı?
+3. **Mühendislik Önerisi:** "Hazır LFP tozumuz yok ANCAK LFP sentezi yapabileceğiniz yüksek saflıkta Nano Demir Oksit stoklarımızda mevcuttur" de.
 
 ### CEVAP FORMATI ###
-- **Analiz:** İhtiyacı ve varsa RİSKLERİ özetle.
-- **Teknik Çözüm:** Doğru ürün ve spekler.
-- **Uygulama Talimatı:** Karışım oranları ve güvenlik uyarısı.
+- **Analiz:** İhtiyacı özetle.
+- **Teknik Çözüm:** Doğru ürün veya alternatif hammadde önerisi.
 - **Sipariş Çağrısı:** Stok ve iletişim.
 
-### YASAKLAR ###
-- Rakip övmek yasak.
-- "Bilmiyorum" demek yasak. "Laboratuvarımıza danışmam gerek" de.
+SEN SADECE BİR BOT DEĞİL, BİR MÜHENDİSLİK OTORİTESİSİN.`;
+    }
+}
 
-SEN SADECE BİR BOT DEĞİL, BİR MÜHENDİSLİK OTORİTESİSİN.
-`;
+// Baslangicta promptu yukle
+loadSystemPrompt();
 
 // --- VERI YUKLEME ---
 let globalProductData = [];
@@ -506,7 +508,8 @@ app.get('/', function(req, res) {
 app.get('/api/test', function(req, res) {
     res.json({
         status: 'OK',
-        version: '2.0',
+        version: '2.1',
+        prompt_source: fs.existsSync('system_prompt.txt') ? 'FILE (system_prompt.txt)' : 'HARDCODED FALLBACK',
         urun_sayisi: globalProductData.length,
         blog_sayisi: knowledgeBase.nanokar_bloglar ? knowledgeBase.nanokar_bloglar.length : 0,
         ses_servisi: speechClient ? 'AKTIF' : 'PASIF',
@@ -549,6 +552,10 @@ app.post('/api/chat', async function(req, res) {
         var userMsg = messages[messages.length - 1].content;
         var clientIp = req.ip || 'unknown';
         console.log("\n[KULLANICI] " + userMsg);
+        
+        // Her chat isteginde prompt dosyasini yeniden oku (Development sirasinda kolaylik)
+        // Production icin bu satiri kapatabilirsin
+        loadSystemPrompt();
 
         // 1. Lead Kontrolu
         var lead = await checkAndSaveLead(userMsg);
@@ -585,8 +592,8 @@ app.post('/api/chat', async function(req, res) {
                 aiContext = "\n\nAI ONERILEN URUNLER:\n" + formatProductListForAI(aiRec.products);
                 console.log("[AI] " + aiRec.products.length + " urun onerdi");
             } else {
-                aiContext = "\n\nUrun bulunamadi. Teknik bilgi ver ve iletisim iste.";
-                console.log("[UYARI] Urun bulunamadi");
+                aiContext = "\n\nUrun bulunamadi. Ancak alternatif hammadde onermelisin.";
+                console.log("[UYARI] Urun bulunamadi - Alternatif onerme modu");
             }
         }
 
@@ -704,13 +711,12 @@ app.post('/api/voice-chat', upload.single('audio'), async function(req, res) {
 // ==================== SERVER BASLAT ====================
 app.listen(port, function() {
     console.log("\n===========================================");
-    console.log("  NANOKAR AI BOT v2.0 (UZMAN MODU)");
+    console.log("  NANOKAR AI BOT v2.1 (SALES LOGIC ENABLED)");
     console.log("===========================================");
     console.log("  Adres: http://localhost:" + port);
     console.log("  Urunler: " + globalProductData.length);
-    console.log("  Bloglar: " + (knowledgeBase.nanokar_bloglar ? knowledgeBase.nanokar_bloglar.length : 0));
+    console.log("  Prompt Kaynagi: " + (fs.existsSync('system_prompt.txt') ? "SYSTEM_PROMPT.TXT (HARICI DOSYA)" : "GOMULU (BACKUP)"));
     console.log("  Ses: " + (speechClient ? "AKTIF" : "PASIF"));
     console.log("  Sheets: " + (process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL ? "AKTIF" : "PASIF"));
-    console.log("  Test: http://localhost:" + port + "/api/test");
     console.log("===========================================\n");
 });
